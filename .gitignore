@@ -1,17 +1,23 @@
-# Python
+# Python runtime
 __pycache__/
 *.py[cod]
 .venv/
 venv/
 .env
 
-# Model artifacts — keep weights local
-verifix/backend/models/*.zip
-verifix/backend/models/*.joblib
-verifix/backend/models/continued_model_extracted/
+# Model and classifier artifacts — keep local
+*.joblib
+*.safetensors
+*.pt
+*.pth
+*.zip
+!backend/verifix-backend-source.zip
+backend/models/*
+!backend/models/README.md
 
-# Local database and runtime files
-verifix/backend/data/
+# Local database and generated runtime data
+*.sqlite
 *.sqlite3
 *.sqlite3-shm
 *.sqlite3-wal
+backend/data/
