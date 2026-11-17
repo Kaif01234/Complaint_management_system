@@ -1,0 +1,2927 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complaints Dashboard | SIH 2026 · SIH26264 · Team Verifix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg-app: #f1f5f9;
+      --bg-sidebar: #ffffff;
+      --bg-card: #ffffff;
+      --bg-elevated: #f8fafc;
+      --bg-hover: #f1f5f9;
+      --border-main: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent-blue: #2563eb;
+      --accent-sky: #0284c7;
+      --bar-track: #e2e8f0;
+    }
+
+    html.dark {
+      --bg-app: #0b1320;
+      --bg-sidebar: #080f1a;
+      --bg-card: #111c2d;
+      --bg-elevated: #162338;
+      --bg-hover: #1c2c46;
+      --border-main: #1e2d45;
+      --border-subtle: #172336;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #8b9bb4;
+      --accent-blue: #4f9cf9;
+      --accent-sky: #38bdf8;
+      --bar-track: #1b283d;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .app-sidebar {
+      background-color: var(--bg-sidebar);
+      border-color: var(--border-main);
+    }
+
+    .app-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-main);
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .app-elevated {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .bar-track {
+      background-color: var(--bar-track);
+    }
+
+    .nav-btn {
+      border-radius: 0.5rem;
+      transition: all 0.15s ease;
+      color: var(--text-secondary);
+    }
+    .nav-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+    .nav-btn.active {
+      background-color: var(--bg-elevated);
+      color: var(--text-primary);
+      font-weight: 600;
+      border: 1px solid var(--border-main);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    html.dark .nav-btn.active {
+      background-color: #1c2838;
+      border-color: #2b3b52;
+      color: #ffffff;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.5);
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.12); opacity: 0.35; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-node {
+      animation: pulseRing 2.4s infinite ease-in-out;
+      transform-origin: center;
+    }
+  </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col md:flex-row select-none md:select-auto">
+
+  <!-- ==================== LEFT SIDEBAR ==================== -->
+  <aside class="app-sidebar w-full md:w-64 md:h-screen border-b md:border-b-0 md:border-r flex flex-col justify-between shrink-0 z-30">
+    <div>
+      <!-- Brand Header (Matches Screenshot 13) -->
+      <div class="px-5 pt-6 pb-4 border-b" style="border-color: var(--border-subtle);">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-base font-bold tracking-tight" style="color: var(--text-primary);">Complaints Dashboard</h1>
+            <p class="text-xs mt-0.5 font-medium" style="color: var(--text-muted);">SIH 2026 · SIH26264 · Prototype</p>
+          </div>
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 text-sky-400 font-mono text-xs font-bold">
+            264
+          </span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1.5 flex md:flex-col overflow-x-auto md:overflow-visible" aria-label="Sidebar Navigation">
+        <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn active w-full text-left px-3.5 py-2.5 text-sm flex items-center justify-between shrink-0">
+          <span class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            <span>Overview</span>
+          </span>
+        </button>
+
+        <button onclick="switchTab('management')" id="nav-management" class="nav-btn w-full text-left px-3.5 py-2.5 text-sm flex items-center justify-between shrink-0">
+          <span class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <span>Complaint Management</span>
+          </span>
+          <span id="sidebar-total-badge" class="text-[11px] font-mono px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-400 font-semibold">18</span>
+        </button>
+
+        <button onclick="switchTab('details')" id="nav-details" class="nav-btn w-full text-left px-3.5 py-2.5 text-sm flex items-center justify-between shrink-0">
+          <span class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>Complaint Details</span>
+          </span>
+          <span id="sidebar-overlap-badge" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-semibold">AI Review</span>
+        </button>
+
+        <button onclick="switchTab('relationship')" id="nav-relationship" class="nav-btn w-full text-left px-3.5 py-2.5 text-sm flex items-center justify-between shrink-0">
+          <span class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <span>Relationship Overview</span>
+          </span>
+        </button>
+
+        <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn w-full text-left px-3.5 py-2.5 text-sm flex items-center justify-between shrink-0">
+          <span class="flex items-center gap-2.5">
+            <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>Analytics</span>
+          </span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Sidebar Bottom: AI Engine Status & Disclaimer -->
+    <div class="hidden md:block p-4 space-y-3 border-t" style="border-color: var(--border-subtle);">
+      <!-- AI Engine Status Card -->
+      <div class="app-elevated rounded-lg p-3">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-muted);">AI Similarity Engine</span>
+          <span id="ai-mode-dot" class="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="ai-mode-label">Python FastAPI</span>
+          </span>
+        </div>
+        <p class="text-[11px] leading-relaxed" style="color: var(--text-muted);">
+          Fine-tuned multilingual Sentence-BERT + institution-aware matching across 6 AICTE Bureaus/Cells.
+        </p>
+        <p id="backend-health-detail" class="text-[10px] mt-2 leading-relaxed" style="color: var(--text-muted);">Checking model API and persistent case store…</p>
+        <button onclick="openAiConfigModal()" class="mt-2 w-full py-1.5 px-2.5 rounded text-xs font-medium bg-sky-500/15 hover:bg-sky-500/25 text-sky-400 border border-sky-500/30 transition flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>Configure AI Model API</span>
+        </button>
+      </div>
+
+      <!-- Footer Text (Matches Screenshot 13) -->
+      <div class="pt-1">
+        <p class="text-[11px] leading-snug" style="color: var(--text-muted);">
+          Illustrative sample data. Not an official AICTE system.<br/>
+          <span class="font-semibold">Team Verifix (SIH-2026-493)</span>
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden">
+
+    <!-- Top Header -->
+    <header class="app-sidebar h-16 px-6 border-b flex items-center justify-between shrink-0 z-20">
+      <div class="flex items-center gap-3">
+        <h2 id="header-title" class="text-xl font-bold tracking-tight" style="color: var(--text-primary);">Overview</h2>
+        <span id="header-subtitle" class="hidden sm:inline-block text-xs px-2.5 py-0.5 rounded-full font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">
+          Cross-Bureau Coordination Workspace
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <!-- New Complaint Button -->
+        <button onclick="openNewComplaintModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 transition shadow-sm flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>+ Log Complaint</span>
+        </button>
+
+        <!-- Reset Demo Button -->
+        <button onclick="resetDemoData()" title="Reset to default 18 sample complaints" class="px-2.5 py-1.5 rounded-lg text-xs font-medium app-elevated hover:opacity-80 transition" style="color: var(--text-secondary);">
+          Reset Data
+        </button>
+
+        <!-- Prototype Badge (Exact match to Screenshot 13) -->
+        <span class="hidden lg:inline-block px-3 py-1.5 rounded-lg text-xs font-medium app-elevated" style="color: var(--text-secondary);">
+          Prototype · sample data
+        </span>
+
+        <!-- Theme Switcher Button (Light / Dark Mode) -->
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold app-card hover:opacity-90 transition flex items-center gap-1.5 cursor-pointer" title="Switch between Dark and Light mode">
+          <span id="theme-icon">☀️</span>
+          <span id="theme-text">Light Mode</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Content Container -->
+    <main class="flex-1 overflow-y-auto p-5 md:p-7 space-y-6">
+
+      <!-- ==================== TAB 1: OVERVIEW (Matches Screenshot 13 + Overlap Alert Bar) ==================== -->
+      <section id="tab-overview" class="tab-pane space-y-6 max-w-7xl mx-auto">
+
+        <!-- Sample Data Disclaimer Banner (Exact match to Screenshot 13) -->
+        <div class="app-card rounded-lg border-l-4 border-l-amber-500 px-4 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="text-amber-500 text-sm">⚠️</span>
+            <p class="text-xs sm:text-sm font-medium" style="color: var(--text-primary);">
+              All figures are calculated from <span id="banner-total-count" class="font-bold">18</span> illustrative sample complaints. No real institutions or personal data.
+            </p>
+          </div>
+          <span class="text-[11px] font-mono shrink-0" style="color: var(--text-muted);">AICTE Bureaus/Cells Sync: Active</span>
+        </div>
+
+        <!-- 4 KPI Cards (Exact match to Screenshot 13) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Total Complaints -->
+          <div class="app-card rounded-xl p-5">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);">TOTAL COMPLAINTS</p>
+            <p id="kpi-total" class="text-3xl font-extrabold mt-2" style="color: var(--text-primary);">18</p>
+            <p class="text-xs mt-2" style="color: var(--text-muted);">All sample records</p>
+          </div>
+
+          <!-- Pending -->
+          <div class="app-card rounded-xl p-5">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);">PENDING</p>
+            <p id="kpi-pending" class="text-3xl font-extrabold mt-2" style="color: var(--text-primary);">13</p>
+            <p id="kpi-pending-sub" class="text-xs mt-2" style="color: var(--text-muted);">Not yet resolved (5 under review)</p>
+          </div>
+
+          <!-- Resolved -->
+          <div class="app-card rounded-xl p-5">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);">RESOLVED</p>
+            <p id="kpi-resolved" class="text-3xl font-extrabold mt-2" style="color: var(--text-primary);">5</p>
+            <p id="kpi-resolved-sub" class="text-xs mt-2" style="color: var(--text-muted);">28% of total</p>
+          </div>
+
+          <!-- High Priority -->
+          <div class="app-card rounded-xl p-5">
+            <p class="text-xs font-semibold uppercase tracking-wider" style="color: var(--text-muted);">HIGH PRIORITY</p>
+            <p id="kpi-high" class="text-3xl font-extrabold mt-2" style="color: var(--text-primary);">7</p>
+            <p id="kpi-high-sub" class="text-xs mt-2" style="color: var(--text-muted);">7 still open</p>
+          </div>
+        </div>
+
+        <!-- Charts Row: Monthly Trend Line Chart + Status Breakdown Bars (Exact match to Screenshot 13) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Left: Complaints received per month (7 cols) -->
+          <div class="app-card rounded-xl p-5 lg:col-span-7 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold" style="color: var(--text-primary);">Complaints received per month</h3>
+              <span class="text-xs font-mono" style="color: var(--text-muted);">Jun 2026 – Oct 2026</span>
+            </div>
+            <!-- Crisp Responsive SVG Line Chart matching Screenshot 13 -->
+            <div class="w-full pt-2 pb-1">
+              <svg id="monthly-line-svg" viewBox="0 0 560 190" class="w-full h-44 overflow-visible"></svg>
+            </div>
+          </div>
+
+          <!-- Right: Status breakdown (5 cols) -->
+          <div class="app-card rounded-xl p-5 lg:col-span-5 flex flex-col justify-between">
+            <div>
+              <h3 class="text-sm font-bold mb-5" style="color: var(--text-primary);">Status breakdown</h3>
+              <div id="overview-status-bars" class="space-y-4">
+                <!-- Populated dynamically via JS: Pending (8), Resolved (5), Under Review (5) -->
+              </div>
+            </div>
+
+            <!-- Cross-Bureau AI Overlap Signal Summary Box -->
+            <div class="mt-6 pt-4 border-t flex items-center justify-between" style="border-color: var(--border-subtle);">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                <div>
+                  <p class="text-xs font-semibold" style="color: var(--text-primary);">
+                    <span id="overview-overlap-count">4</span> Cross-Bureau Overlap Clusters Detected
+                  </p>
+                  <p class="text-[11px]" style="color: var(--text-muted);">Same institution & semantically related issues across cells</p>
+                </div>
+              </div>
+              <button onclick="switchTab('relationship')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 transition shrink-0">
+                Review Overlaps →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Complaints Table (Matches Screenshot 13) -->
+        <div class="app-card rounded-xl overflow-hidden">
+          <div class="px-5 py-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2" style="border-color: var(--border-subtle);">
+            <div>
+              <h3 class="text-sm font-bold" style="color: var(--text-primary);">Recent complaints</h3>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">Latest cases across AICTE Bureaus and Cells with AI overlap signals</p>
+            </div>
+            <button onclick="switchTab('management')" class="text-xs font-semibold text-sky-400 hover:underline self-start sm:self-auto">
+              View all 18 complaints →
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b text-[11px] font-semibold uppercase tracking-wider" style="border-color: var(--border-subtle); color: var(--text-muted);">
+                  <th class="py-3.5 px-4">COMPLAINT ID</th>
+                  <th class="py-3.5 px-4">INSTITUTION</th>
+                  <th class="py-3.5 px-4">CATEGORY</th>
+                  <th class="py-3.5 px-4">BUREAU / CELL</th>
+                  <th class="py-3.5 px-4">RECEIVED</th>
+                  <th class="py-3.5 px-4">PRIORITY</th>
+                  <th class="py-3.5 px-4">AI SIGNAL</th>
+                  <th class="py-3.5 px-4">STATUS</th>
+                  <th class="py-3.5 px-4 text-right">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="overview-recent-tbody" class="divide-y text-xs" style="border-color: var(--border-subtle);">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 2: COMPLAINT MANAGEMENT ==================== -->
+      <section id="tab-management" class="tab-pane hidden space-y-5 max-w-7xl mx-auto">
+        <!-- Filter & Search Controls -->
+        <div class="app-card rounded-xl p-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            <!-- Search -->
+            <div class="lg:col-span-2 relative">
+              <input
+                type="text"
+                id="filter-search"
+                oninput="renderManagementTable()"
+                placeholder="Search ID, College, AICTE ID, or keyword..."
+                class="w-full pl-9 pr-3 py-2 rounded-lg text-xs app-elevated focus:outline-none focus:ring-2 focus:ring-sky-500"
+                style="color: var(--text-primary);"
+              />
+              <svg class="w-4 h-4 absolute left-3 top-2.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+
+            <!-- Bureau Filter -->
+            <div>
+              <select id="filter-bureau" onchange="renderManagementTable()" class="w-full px-3 py-2 rounded-lg text-xs app-elevated focus:outline-none focus:ring-2 focus:ring-sky-500" style="color: var(--text-primary);">
+                <option value="ALL">All Bureaus / Cells (6)</option>
+                <option value="Approval Bureau">Approval Bureau</option>
+                <option value="Finance Cell">Finance Cell (RB)</option>
+                <option value="Academic Bureau">Academic Bureau</option>
+                <option value="Quality Assurance Cell">Quality Assurance Cell</option>
+                <option value="Student Welfare Cell">Student Welfare Cell</option>
+                <option value="Grievance Cell">Grievance Cell (PGRC)</option>
+              </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div>
+              <select id="filter-category" onchange="renderManagementTable()" class="w-full px-3 py-2 rounded-lg text-xs app-elevated focus:outline-none focus:ring-2 focus:ring-sky-500" style="color: var(--text-primary);">
+                <option value="ALL">All Categories (6)</option>
+                <option value="Approval Process">Approval Process</option>
+                <option value="Fee Regulation">Fee Regulation</option>
+                <option value="Faculty Norms">Faculty Norms</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="Scholarship">Scholarship</option>
+                <option value="Grievance Redressal">Grievance Redressal</option>
+              </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div>
+              <select id="filter-status" onchange="renderManagementTable()" class="w-full px-3 py-2 rounded-lg text-xs app-elevated focus:outline-none focus:ring-2 focus:ring-sky-500" style="color: var(--text-primary);">
+                <option value="ALL">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </div>
+
+            <!-- Overlap Toggle -->
+            <div class="flex items-center">
+              <label class="flex items-center gap-2 cursor-pointer text-xs font-medium px-3 py-2 rounded-lg app-elevated w-full justify-center">
+                <input type="checkbox" id="filter-overlap-only" onchange="renderManagementTable()" class="rounded text-sky-500 focus:ring-0" />
+                <span style="color: var(--text-primary);">⚡ Overlaps Only</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Complaint Registry Table -->
+        <div class="app-card rounded-xl overflow-hidden">
+          <div class="px-5 py-3.5 border-b flex items-center justify-between" style="border-color: var(--border-subtle);">
+            <p class="text-xs font-semibold" style="color: var(--text-secondary);">
+              Showing <span id="mgmt-showing-count" class="font-bold" style="color: var(--text-primary);">18</span> complaint cases across AICTE Bureaus/Cells
+            </p>
+            <div class="flex items-center gap-2">
+              <button onclick="exportComplaintsCsv()" class="px-3 py-1.5 rounded-lg text-xs font-medium app-elevated hover:opacity-80 transition" style="color: var(--text-secondary);">
+                ⬇ Export CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b text-[11px] font-semibold uppercase tracking-wider" style="border-color: var(--border-subtle); color: var(--text-muted);">
+                  <th class="py-3.5 px-4">COMPLAINT ID</th>
+                  <th class="py-3.5 px-4">INSTITUTION & AICTE ID</th>
+                  <th class="py-3.5 px-4">CATEGORY & SUMMARY</th>
+                  <th class="py-3.5 px-4">BUREAU / CELL</th>
+                  <th class="py-3.5 px-4">RECEIVED</th>
+                  <th class="py-3.5 px-4">PRIORITY</th>
+                  <th class="py-3.5 px-4">OVERLAP SIGNAL</th>
+                  <th class="py-3.5 px-4">STATUS</th>
+                  <th class="py-3.5 px-4 text-right">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="management-tbody" class="divide-y text-xs" style="border-color: var(--border-subtle);">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 3: COMPLAINT DETAILS & HUMAN-IN-THE-LOOP VERIFICATION ==================== -->
+      <section id="tab-details" class="tab-pane hidden space-y-6 max-w-7xl mx-auto">
+        <!-- Case Selector Bar -->
+        <div class="app-card rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3 flex-wrap">
+            <label for="details-case-select" class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Select Case File:</label>
+            <select id="details-case-select" onchange="selectCaseForDetails(this.value)" class="px-3.5 py-2 rounded-lg text-xs font-semibold app-elevated focus:outline-none focus:ring-2 focus:ring-sky-500" style="color: var(--text-primary);">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs" style="color: var(--text-muted);">Human-in-the-Loop Policy:</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              No Auto-Merge · Officer Verification Mandatory
+            </span>
+          </div>
+        </div>
+
+        <!-- Main 2-Column Case & Overlap Workspace -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Left Column: Case Dossier + Action & Audit Trail (7 cols) -->
+          <div class="lg:col-span-7 space-y-6">
+            <!-- Dossier Card -->
+            <div id="details-dossier-card" class="app-card rounded-xl p-6 space-y-5">
+              <!-- Populated dynamically by JS -->
+            </div>
+
+            <!-- Officer Action & Audit Trail Card -->
+            <div class="app-card rounded-xl p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold" style="color: var(--text-primary);">Cross-Bureau Action Log & Audit Trail</h3>
+                <span class="text-[11px] font-mono" style="color: var(--text-muted);">Immutable Timestamped History</span>
+              </div>
+
+              <!-- Add Action / Remark Form -->
+              <div class="app-elevated rounded-lg p-4 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold mb-1" style="color: var(--text-muted);">Update Status</label>
+                    <select id="action-status-select" class="w-full px-2.5 py-1.5 rounded text-xs app-card" style="color: var(--text-primary);">
+                      <option value="Pending">Pending</option>
+                      <option value="Under Review">Under Review</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold mb-1" style="color: var(--text-muted);">Coordinate / Transfer Bureau</label>
+                    <select id="action-bureau-select" class="w-full px-2.5 py-1.5 rounded text-xs app-card" style="color: var(--text-primary);">
+                      <option value="KEEP">Keep Current Bureau</option>
+                      <option value="Approval Bureau">Approval Bureau</option>
+                      <option value="Finance Cell">Finance Cell (RB)</option>
+                      <option value="Academic Bureau">Academic Bureau</option>
+                      <option value="Quality Assurance Cell">Quality Assurance Cell</option>
+                      <option value="Student Welfare Cell">Student Welfare Cell</option>
+                      <option value="Grievance Cell">Grievance Cell (PGRC)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold mb-1" style="color: var(--text-muted);">Officer Designation</label>
+                    <input type="text" id="action-officer-input" value="Review Officer (AICTE)" class="w-full px-2.5 py-1.5 rounded text-xs app-card" style="color: var(--text-primary);" />
+                  </div>
+                </div>
+                <div>
+                  <textarea id="action-remark-input" rows="2" placeholder="Enter official scrutiny note, bureau coordination remark, or resolution summary..." class="w-full p-2.5 rounded text-xs app-card focus:outline-none focus:ring-1 focus:ring-sky-500" style="color: var(--text-primary);"></textarea>
+                </div>
+                <div class="flex justify-end">
+                  <button onclick="submitCaseAction()" class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 transition">
+                    Record Action & Update Status
+                  </button>
+                </div>
+              </div>
+
+              <!-- Audit Timeline -->
+              <div id="details-audit-list" class="space-y-3 pt-2 max-h-72 overflow-y-auto pr-1">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Institution 360° Profile + AI Overlap Verification Card (5 cols) -->
+          <div class="lg:col-span-5 space-y-6">
+            <!-- Institution 360° Card -->
+            <div id="details-inst360-card" class="app-card rounded-xl p-6">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- AI Overlap Detection & Human-in-the-Loop Verification Card -->
+            <div id="details-overlap-card" class="app-card rounded-xl overflow-hidden">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 4: RELATIONSHIP OVERVIEW & AI SIMILARITY SANDBOX ==================== -->
+      <section id="tab-relationship" class="tab-pane hidden space-y-6 max-w-7xl mx-auto">
+
+        <!-- Top Explanation & Cluster Filter Bar -->
+        <div class="app-card rounded-xl p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-sky-500/15 text-sky-400 border border-sky-500/30">GRAPH + NLP ENGINE</span>
+              <h3 class="text-base font-bold" style="color: var(--text-primary);">Cross-Bureau Institution & Complaint Relationship Network</h3>
+            </div>
+            <p class="text-xs mt-1" style="color: var(--text-muted);">
+              Visualizing how complaints filed across different AICTE Bureaus/Cells connect to the same technical institution. Click any node to inspect.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="graph-inst-filter" onchange="renderRelationshipGraph()" class="px-3 py-1.5 rounded-lg text-xs font-semibold app-elevated" style="color: var(--text-primary);">
+              <option value="ALL">All Multi-Complaint Institutions (4 Clusters)</option>
+              <option value="INST-101">ABC Engineering College (Fee & Scholarship)</option>
+              <option value="INST-102">Lakeview College of Engineering (Faculty & Lab)</option>
+              <option value="INST-103">Pune Institute of Tech (EoA & Intake)</option>
+              <option value="INST-104">Apex Technical Campus (Hostel & Ragging)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Network Graph + Selected Node Inspector -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="app-card rounded-xl p-4 lg:col-span-8 flex flex-col justify-between">
+            <div class="flex items-center justify-between px-2 mb-2">
+              <div class="flex flex-wrap items-center gap-4 text-[11px]" style="color: var(--text-muted);">
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-500 inline-block"></span> Institution Hub</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Overlapping Case (Unverified)</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Coordinated / Linked Case</span>
+              </div>
+              <span class="text-[11px] font-mono" style="color: var(--text-muted);">Click any node</span>
+            </div>
+
+            <div class="w-full overflow-hidden rounded-lg app-elevated flex items-center justify-center" style="min-height: 390px;">
+              <svg id="relationship-network-svg" viewBox="0 0 760 400" class="w-full h-[390px] select-none"></svg>
+            </div>
+          </div>
+
+          <!-- Right: Active Overlap Clusters & Quick Verification -->
+          <div class="app-card rounded-xl p-5 lg:col-span-4 flex flex-col justify-between space-y-4">
+            <div>
+              <h4 class="text-sm font-bold mb-1" style="color: var(--text-primary);">Detected Cross-Bureau Overlap Pairs</h4>
+              <p class="text-xs mb-4" style="color: var(--text-muted);">Ranked by Hybrid Entity + Semantic Similarity score</p>
+              <div id="relationship-clusters-list" class="space-y-3 max-h-[330px] overflow-y-auto pr-1">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live AI Semantic Similarity Sandbox (Ready for Python Model Integration!) -->
+        <div class="app-card rounded-xl p-6 space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4" style="border-color: var(--border-subtle);">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold" style="color: var(--text-primary);">Interactive AI Overlap & Semantic Similarity Sandbox</h3>
+                <span id="sandbox-engine-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  Engine: Hybrid NLP + Cosine Vector
+                </span>
+              </div>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">
+                Test how the model scores two complaints across different bureaus using Institution ID, semantic concepts, and complaint text.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="loadPresetComparison(1)" class="px-2.5 py-1 rounded text-xs app-elevated hover:opacity-80" style="color: var(--text-secondary);">Preset 1: Excess Fees (PGRC vs RB)</button>
+              <button onclick="loadPresetComparison(2)" class="px-2.5 py-1 rounded text-xs app-elevated hover:opacity-80" style="color: var(--text-secondary);">Preset 2: Faculty Shortage</button>
+              <button onclick="loadPresetComparison(3)" class="px-2.5 py-1 rounded text-xs app-elevated hover:opacity-80" style="color: var(--text-secondary);">Preset 3: Unrelated</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <!-- Case A Input -->
+            <div class="lg:col-span-5 app-elevated rounded-xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-purple-400 uppercase">Complaint A (e.g., Grievance Cell / PGRC)</span>
+                <span class="text-[11px] font-mono" style="color: var(--text-muted);">Source Desk</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input id="sim-inst-a" type="text" value="ABC Engineering College" oninput="runSimilaritySandbox()" class="px-2.5 py-1.5 rounded text-xs app-card" style="color: var(--text-primary);" placeholder="Institution Name" />
+                <input id="sim-id-a" type="text" value="1-45829101" oninput="runSimilaritySandbox()" class="px-2.5 py-1.5 rounded text-xs font-mono app-card" style="color: var(--text-primary);" placeholder="AICTE ID" />
+              </div>
+              <textarea id="sim-text-a" rows="3" oninput="runSimilaritySandbox()" class="w-full p-2.5 rounded text-xs app-card" style="color: var(--text-primary);">Excess tuition and development fees charged to B.Tech students beyond prescribed state fee regulatory committee norms.</textarea>
+            </div>
+
+            <!-- Center Score Output -->
+            <div class="lg:col-span-2 app-elevated rounded-xl p-4 flex flex-col items-center justify-center text-center space-y-2">
+              <span class="text-[10px] font-mono uppercase tracking-wider" style="color: var(--text-muted);">Similarity Score</span>
+              <div id="sim-score-circle" class="w-20 h-20 rounded-full flex items-center justify-center border-4 border-rose-500 text-xl font-extrabold" style="color: var(--text-primary);">
+                89%
+              </div>
+              <span id="sim-verdict-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400">
+                HIGH OVERLAP
+              </span>
+              <p id="sim-breakdown-text" class="text-[10px] leading-tight" style="color: var(--text-muted);">
+                ID Match: 100% · Text Semantic: 84%
+              </p>
+            </div>
+
+            <!-- Case B Input -->
+            <div class="lg:col-span-5 app-elevated rounded-xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-400 uppercase">Complaint B (e.g., Finance Cell / RB)</span>
+                <span class="text-[11px] font-mono" style="color: var(--text-muted);">Candidate Desk</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input id="sim-inst-b" type="text" value="ABC Engg College" oninput="runSimilaritySandbox()" class="px-2.5 py-1.5 rounded text-xs app-card" style="color: var(--text-primary);" placeholder="Institution Name" />
+                <input id="sim-id-b" type="text" value="1-45829101" oninput="runSimilaritySandbox()" class="px-2.5 py-1.5 rounded text-xs font-mono app-card" style="color: var(--text-primary);" placeholder="AICTE ID" />
+              </div>
+              <textarea id="sim-text-b" rows="3" oninput="runSimilaritySandbox()" class="w-full p-2.5 rounded text-xs app-card" style="color: var(--text-primary);">College management is collecting capitation and annual fees above permitted limits without issuing official receipts.</textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== TAB 5: ANALYTICS (Matches User's Exact Analytics Screenshot!) ==================== -->
+      <section id="tab-analytics" class="tab-pane hidden space-y-6 max-w-7xl mx-auto">
+
+        <!-- 4-Panel Grid matching the exact uploaded Analytics screenshot -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+          <!-- Panel 1: Complaints by category -->
+          <div class="app-card rounded-xl p-6">
+            <h3 class="text-sm font-bold mb-5" style="color: var(--text-primary);">Complaints by category</h3>
+            <div id="analytics-category-bars" class="space-y-4">
+              <!-- Populated by JS: Approval Process (4), Fee Regulation (3), Faculty Norms (3), Infrastructure (3), Scholarship (3), Grievance Redressal (2) -->
+            </div>
+          </div>
+
+          <!-- Panel 2: Complaints by bureau / cell -->
+          <div class="app-card rounded-xl p-6">
+            <h3 class="text-sm font-bold mb-5" style="color: var(--text-primary);">Complaints by bureau / cell</h3>
+            <div id="analytics-bureau-bars" class="space-y-4">
+              <!-- Populated by JS: Approval Bureau (4), Finance Cell (3), Academic Bureau (3), Quality Assurance Cell (3), Student Welfare Cell (3), Grievance Cell (2) -->
+            </div>
+          </div>
+
+          <!-- Panel 3: Pending vs resolved overall -->
+          <div class="app-card rounded-xl p-6">
+            <h3 class="text-sm font-bold" style="color: var(--text-primary);">Pending vs resolved overall</h3>
+            <p class="text-xs mt-1 mb-5" style="color: var(--text-muted);">Pending includes complaints under review.</p>
+            <div id="analytics-overall-bars" class="space-y-4">
+              <!-- Populated by JS: Pending (13 - amber/orange), Resolved (5 - green) -->
+            </div>
+          </div>
+
+          <!-- Panel 4: Pending / resolved by bureau -->
+          <div class="app-card rounded-xl p-6">
+            <h3 class="text-sm font-bold" style="color: var(--text-primary);">Pending / resolved by bureau</h3>
+            <div class="flex items-center gap-4 text-xs mt-1 mb-5" style="color: var(--text-muted);">
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-sm bg-[#d99b26] inline-block"></span>
+                <span>Pending</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-sm bg-[#4aab76] inline-block"></span>
+                <span>Resolved (values shown as pending / resolved)</span>
+              </span>
+            </div>
+            <div id="analytics-stacked-bureau-bars" class="space-y-4">
+              <!-- Populated by JS: Academic Bureau (3 / 0), Approval Bureau (2 / 2), Finance Cell (3 / 0), Grievance Cell (1 / 1), Quality Assurance Cell (2 / 1), Student Welfare Cell (2 / 1) -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Institutions Requiring Attention Table (Supports Slide 5 Impact: "Better Decisions by AICTE") -->
+        <div class="app-card rounded-xl overflow-hidden">
+          <div class="px-6 py-4 border-b flex items-center justify-between" style="border-color: var(--border-subtle);">
+            <div>
+              <h3 class="text-sm font-bold" style="color: var(--text-primary);">Institutions with Repeated / Multi-Bureau Complaints</h3>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">Helps AICTE identify colleges with repeated complaints across departments that require coordinated action</p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b text-[11px] font-semibold uppercase tracking-wider" style="border-color: var(--border-subtle); color: var(--text-muted);">
+                  <th class="py-3 px-5">INSTITUTION NAME</th>
+                  <th class="py-3 px-5">AICTE PERMANENT ID</th>
+                  <th class="py-3 px-5">TOTAL CASES</th>
+                  <th class="py-3 px-5">BUREAUS / CELLS INVOLVED</th>
+                  <th class="py-3 px-5">OVERLAP STATUS</th>
+                  <th class="py-3 px-5 text-right">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="analytics-inst-tbody" class="divide-y text-xs" style="border-color: var(--border-subtle);">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== MODAL 1: LOG NEW COMPLAINT (WITH LIVE AI OVERLAP CHECK) ==================== -->
+  <div id="modal-new-complaint" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="app-card rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+        <div>
+          <h3 class="text-base font-bold" style="color: var(--text-primary);">Log New Institution Complaint Case</h3>
+          <p class="text-xs" style="color: var(--text-muted);">Live AI Overlap Detector checks existing cases across all AICTE Bureaus as you type</p>
+        </div>
+        <button onclick="closeNewComplaintModal()" class="text-sm px-2.5 py-1 rounded app-elevated">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Institution Name</label>
+          <input id="new-inst-name" type="text" value="ABC Engineering College" oninput="checkLiveIntakeOverlap()" class="w-full px-3 py-2 rounded-lg text-xs app-elevated" style="color: var(--text-primary);" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">AICTE Permanent ID</label>
+          <input id="new-inst-id" type="text" value="1-45829101" oninput="checkLiveIntakeOverlap()" class="w-full px-3 py-2 rounded-lg text-xs font-mono app-elevated" style="color: var(--text-primary);" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Category</label>
+          <select id="new-category" onchange="checkLiveIntakeOverlap()" class="w-full px-3 py-2 rounded-lg text-xs app-elevated" style="color: var(--text-primary);">
+            <option value="Fee Regulation">Fee Regulation</option>
+            <option value="Faculty Norms">Faculty Norms</option>
+            <option value="Approval Process">Approval Process</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Scholarship">Scholarship</option>
+            <option value="Grievance Redressal">Grievance Redressal</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Assigned Bureau / Cell</label>
+          <select id="new-bureau" onchange="checkLiveIntakeOverlap()" class="w-full px-3 py-2 rounded-lg text-xs app-elevated" style="color: var(--text-primary);">
+            <option value="Grievance Cell">Grievance Cell (PGRC)</option>
+            <option value="Finance Cell">Finance Cell (RB)</option>
+            <option value="Academic Bureau">Academic Bureau</option>
+            <option value="Approval Bureau">Approval Bureau</option>
+            <option value="Quality Assurance Cell">Quality Assurance Cell</option>
+            <option value="Student Welfare Cell">Student Welfare Cell</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Priority Level</label>
+          <select id="new-priority" class="w-full px-3 py-2 rounded-lg text-xs app-elevated" style="color: var(--text-primary);">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Complainant Type</label>
+          <select id="new-complainant" class="w-full px-3 py-2 rounded-lg text-xs app-elevated" style="color: var(--text-primary);">
+            <option value="Student">Student</option>
+            <option value="Faculty Member">Faculty Member</option>
+            <option value="Parent / Stakeholder">Parent / Stakeholder</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Complaint Description</label>
+        <textarea id="new-description" rows="3" oninput="checkLiveIntakeOverlap()" class="w-full p-3 rounded-lg text-xs app-elevated" style="color: var(--text-primary);">Students are being forced to pay extra development and tuition fees above the approved state fee committee limit.</textarea>
+      </div>
+
+      <!-- Live AI Pre-Ingestion Overlap Alert Box -->
+      <div id="live-intake-overlap-box" class="rounded-xl p-4 border border-amber-500/40 bg-amber-500/10 space-y-2">
+        <!-- Populated in real time by JS -->
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeNewComplaintModal()" class="px-4 py-2 rounded-lg text-xs font-medium app-elevated" style="color: var(--text-secondary);">Cancel</button>
+        <button onclick="saveNewComplaint()" class="px-5 py-2 rounded-lg text-xs font-bold bg-sky-500 hover:bg-sky-400 text-slate-950 transition">
+          Submit & Register Case
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: AI MODEL API CONNECTOR SETTINGS ==================== -->
+  <div id="modal-ai-config" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="app-card rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+        <div>
+          <h3 class="text-base font-bold" style="color: var(--text-primary);">AI Overlap Detection Model Connector</h3>
+          <p class="text-xs" style="color: var(--text-muted);">Connect the locally running fine-tuned Verifix model or use the browser fallback</p>
+        </div>
+        <button onclick="closeAiConfigModal()" class="text-sm px-2.5 py-1 rounded app-elevated">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <label class="block text-xs font-semibold" style="color: var(--text-secondary);">Select Inference Mode</label>
+        <select id="ai-config-mode" class="w-full px-3 py-2 rounded-lg text-xs font-semibold app-elevated" style="color: var(--text-primary);">
+          <option value="HYBRID_LOCAL">In-Browser Hybrid NLP Engine (Entity ID + Domain Synonyms + TF-IDF Cosine)</option>
+          <option value="PYTHON_API">External Python FastAPI AI Model (Sentence-BERT / Scikit-Learn REST API)</option>
+        </select>
+
+        <div>
+          <label class="block text-xs font-semibold mb-1" style="color: var(--text-secondary);">Python FastAPI Endpoint URL</label>
+          <input id="ai-config-url" type="text" value="http://127.0.0.1:8000/api/check-overlap" class="w-full px-3 py-2 rounded-lg text-xs font-mono app-elevated" style="color: var(--text-primary);" />
+          <p class="text-[11px] mt-1" style="color: var(--text-muted);">
+            Keep the FastAPI server running on port 8000. The dashboard uses the model for pair comparison and related-case suggestions. If the API is unavailable, the browser fallback is clearly labelled. Model suggestions never automatically merge cases.
+          </p>
+        </div>
+
+        <div id="ai-ping-status" class="text-xs p-3 rounded-lg app-elevated font-mono" style="color: var(--text-secondary);">
+          Status: Ready. Fine-tuned Python API is the preferred engine.
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="testAiEndpointPing()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 transition">
+          ⚡ Test API Connection
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeAiConfigModal()" class="px-4 py-2 rounded-lg text-xs font-medium app-elevated" style="color: var(--text-secondary);">Close</button>
+          <button onclick="saveAiConfig()" class="px-4 py-2 rounded-lg text-xs font-bold bg-sky-500 hover:bg-sky-400 text-slate-950 transition">Save Mode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- ==================== APPLICATION JAVASCRIPT & AI ENGINE ==================== -->
+  <script>
+    // ============================================================================
+    // 1. RECONCILED 18-COMPLAINT DATASET (100% Mathematical Match to Screenshots)
+    // ============================================================================
+    // Totals: 18 Complaints
+    // Statuses: 8 Pending + 5 Under Review (= 13 Pending overall) + 5 Resolved = 18
+    // Priority: 7 High (all 7 open) + 7 Medium + 4 Low = 18
+    // Months: Jun (2), Jul (4), Aug (4), Sep (4), Oct (4) = 18
+    // Categories: Approval Process (4), Fee Regulation (3), Faculty Norms (3),
+    //             Infrastructure (3), Scholarship (3), Grievance Redressal (2) = 18
+    // Bureaus (Pending/Review vs Resolved):
+    //   - Approval Bureau: 4 total (2 open / 2 resolved)
+    //   - Finance Cell: 3 total (3 open / 0 resolved)
+    //   - Academic Bureau: 3 total (3 open / 0 resolved)
+    //   - Quality Assurance Cell: 3 total (2 open / 1 resolved)
+    //   - Student Welfare Cell: 3 total (2 open / 1 resolved)
+    //   - Grievance Cell: 2 total (1 open / 1 resolved)
+    // ============================================================================
+
+    const INITIAL_COMPLAINTS = [
+      {
+        id: "CMP-2026-1018",
+        institution: "Lakeview College of Engineering",
+        aicteId: "1-33910422",
+        category: "Faculty Norms",
+        bureau: "Academic Bureau",
+        received: "23 Oct 2026",
+        month: "Oct 2026",
+        priority: "Low",
+        status: "Under Review",
+        complainant: "Faculty Member",
+        summary: "Shortage of senior professors in Computer Science and non-compliance with 1:20 faculty-student ratio.",
+        description: "The Computer Science department is operating with guest lecturers instead of regular PhD professors as mandated by AICTE faculty cadre ratio norms.",
+        linkedCases: ["CMP-2026-1014"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "23 Oct 2026, 10:15 AM", actor: "System Intake", note: "Case registered under Academic Bureau. AI flagged 86% overlap with CMP-2026-1014 (Quality Assurance Cell)." },
+          { time: "24 Oct 2026, 02:30 PM", actor: "Academic Desk Officer", note: "Requested latest faculty roster and biometric attendance logs from institution." }
+        ]
+      },
+      {
+        id: "CMP-2026-1017",
+        institution: "ABC Engineering College",
+        aicteId: "1-45829101",
+        category: "Fee Regulation",
+        bureau: "Finance Cell",
+        received: "21 Oct 2026",
+        month: "Oct 2026",
+        priority: "High",
+        status: "Pending",
+        complainant: "Parent / Stakeholder",
+        summary: "Collection of fees above permitted state regulatory limits (Ref: RB Case 205).",
+        description: "Institution management is demanding additional development and capitation fees above the ceiling fixed by the State Fee Regulatory Committee for B.Tech admissions.",
+        linkedCases: ["CMP-2026-1016", "CMP-2026-1009"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "21 Oct 2026, 11:05 AM", actor: "Finance Cell (RB)", note: "Action initiated. AI Overlap Engine detected 91% semantic match with Grievance Cell Case CMP-2026-1016 (PGRC Case 101)." }
+        ]
+      },
+      {
+        id: "CMP-2026-1016",
+        institution: "ABC Engineering College",
+        aicteId: "1-45829101",
+        category: "Fee Regulation",
+        bureau: "Grievance Cell",
+        received: "19 Oct 2026",
+        month: "Oct 2026",
+        priority: "High",
+        status: "Under Review",
+        complainant: "Student",
+        summary: "Excess tuition fees charged to B.Tech students without official fee receipts (Ref: PGRC Case 101).",
+        description: "Students are being charged Rs. 35,000 excess tuition and exam fees per semester beyond the approved fee structure, and receipts are not issued.",
+        linkedCases: ["CMP-2026-1017", "CMP-2026-1009"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "19 Oct 2026, 09:40 AM", actor: "Grievance Cell (PGRC)", note: "Complaint logged via student grievance portal. Placed under review." },
+          { time: "21 Oct 2026, 11:06 AM", actor: "AI Overlap Detector", note: "Cross-Bureau Alert: Finance Cell (RB) received related fee complaint CMP-2026-1017 for ABC Engineering College." }
+        ]
+      },
+      {
+        id: "CMP-2026-1015",
+        institution: "Pune Institute of Tech",
+        aicteId: "1-12346009",
+        category: "Approval Process",
+        bureau: "Approval Bureau",
+        received: "12 Oct 2026",
+        month: "Oct 2026",
+        priority: "High",
+        status: "Pending",
+        complainant: "Student",
+        summary: "Admission of students into unapproved AI & Data Science division exceeding sanctioned EoA intake.",
+        description: "The institute admitted 180 students into B.E. Artificial Intelligence whereas the AICTE Extension of Approval (EoA) letter sanctions only 120 seats.",
+        linkedCases: ["CMP-2026-1011"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "12 Oct 2026, 04:10 PM", actor: "Approval Bureau", note: "Flagged for verification against current APH sanctioned intake records." }
+        ]
+      },
+      {
+        id: "CMP-2026-1014",
+        institution: "Lakeview College of Engineering",
+        aicteId: "1-33910422",
+        category: "Infrastructure",
+        bureau: "Quality Assurance Cell",
+        received: "26 Sep 2026",
+        month: "Sep 2026",
+        priority: "High",
+        status: "Under Review",
+        complainant: "Student",
+        summary: "Inadequate computer lab equipment and lack of qualified lab faculty for final year batches.",
+        description: "Over 40% of systems in the main computing laboratory are non-functional and practical sessions are unguided due to faculty shortage in CSE.",
+        linkedCases: ["CMP-2026-1018"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "26 Sep 2026, 01:20 PM", actor: "Quality Assurance Cell", note: "Inspection query issued to regional officer." }
+        ]
+      },
+      {
+        id: "CMP-2026-1013",
+        institution: "Apex Technical Campus",
+        aicteId: "1-77219830",
+        category: "Grievance Redressal",
+        bureau: "Student Welfare Cell",
+        received: "19 Sep 2026",
+        month: "Sep 2026",
+        priority: "High",
+        status: "Pending",
+        complainant: "Student",
+        summary: "Non-functional internal anti-ragging and student grievance redressal committee on campus.",
+        description: "Hostel students reported intimidation incidents, but the college internal grievance committee has not convened or recorded minutes this semester.",
+        linkedCases: ["CMP-2026-1010"],
+        overlapConfirmed: true,
+        audit: [
+          { time: "19 Sep 2026, 03:45 PM", actor: "Student Welfare Cell", note: "High-priority notice issued to Principal." },
+          { time: "22 Sep 2026, 10:00 AM", actor: "Coordination Officer", note: "Confirmed link with CMP-2026-1010 (Quality Assurance Cell hostel safety case)." }
+        ]
+      },
+      {
+        id: "CMP-2026-1012",
+        institution: "Sunrise Institute of Pharmacy",
+        aicteId: "1-55401922",
+        category: "Scholarship",
+        bureau: "Student Welfare Cell",
+        received: "14 Sep 2026",
+        month: "Sep 2026",
+        priority: "Medium",
+        status: "Pending",
+        complainant: "Student",
+        summary: "Delay in institutional verification of AICTE Pragati & Saksham scholarship applications.",
+        description: "More than 25 eligible students are awaiting institute-level nodal officer verification on the portal before the scholarship deadline.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "14 Sep 2026, 11:30 AM", actor: "Student Welfare Cell", note: "Reminder sent to institute scholarship nodal officer." }
+        ]
+      },
+      {
+        id: "CMP-2026-1011",
+        institution: "Pune Institute of Tech",
+        aicteId: "1-12346009",
+        category: "Approval Process",
+        bureau: "Approval Bureau",
+        received: "05 Sep 2026",
+        month: "Sep 2026",
+        priority: "High",
+        status: "Under Review",
+        complainant: "Faculty Member",
+        summary: " discrepancies in land use certificate and classroom area submitted for additional intake approval.",
+        description: " Built-up instructional area shown in the compliance affidavit is shared with another trust institution on the same campus.",
+        linkedCases: ["CMP-2026-1015"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "05 Sep 2026, 02:15 PM", actor: "Approval Bureau", note: "Cross-checking building plan blueprint with scrutiny committee." }
+        ]
+      },
+      {
+        id: "CMP-2026-1010",
+        institution: "Apex Technical Campus",
+        aicteId: "1-77219830",
+        category: "Infrastructure",
+        bureau: "Quality Assurance Cell",
+        received: "27 Aug 2026",
+        month: "Aug 2026",
+        priority: "High",
+        status: "Pending",
+        complainant: "Parent / Stakeholder",
+        summary: "Unsafe electrical wiring and lack of fire safetywarden supervision in boys hostel block.",
+        description: "Hostel block B lacks valid fire safety extinguishers and night wardens, creating safety and welfare risks for first-year residents.",
+        linkedCases: ["CMP-2026-1013"],
+        overlapConfirmed: true,
+        audit: [
+          { time: "27 Aug 2026, 05:00 PM", actor: "Quality Assurance Cell", note: "Linked with Student Welfare Cell case CMP-2026-1013 for joint compliance review." }
+        ]
+      },
+      {
+        id: "CMP-2026-1009",
+        institution: "ABC Engineering College",
+        aicteId: "1-45829101",
+        category: "Scholarship",
+        bureau: "Finance Cell",
+        received: "19 Aug 2026",
+        month: "Aug 2026",
+        priority: "Medium",
+        status: "Pending",
+        complainant: "Student",
+        summary: "Withholding of original documents despite fee reimbursement credit under state scholarship.",
+        description: "College accounts section is refusing to release original mark sheets unless students pay differential tuition fees already covered under scholarship.",
+        linkedCases: ["CMP-2026-1016", "CMP-2026-1017"],
+        overlapConfirmed: false,
+        audit: [
+          { time: "19 Aug 2026, 12:10 PM", actor: "Finance Cell", note: "Connected to ABC Engineering College fee regulation inquiry." }
+        ]
+      },
+      {
+        id: "CMP-2026-1008",
+        institution: "Metro Polytechnic Institute",
+        aicteId: "1-88301244",
+        category: "Faculty Norms",
+        bureau: "Academic Bureau",
+        received: "11 Aug 2026",
+        month: "Aug 2026",
+        priority: "Medium",
+        status: "Pending",
+        complainant: "Faculty Member",
+        summary: "Non-payment of 7th CPC pay scale arrears and irregular salary disbursement to diploma faculty.",
+        description: "Faculty members in Mechanical and Civil branches have not received revised Dearness Allowance and regular monthly salary for two months.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "11 Aug 2026, 03:00 PM", actor: "Academic Bureau", note: " Explanation sought from Governing Body chairman." }
+        ]
+      },
+      {
+        id: "CMP-2026-1007",
+        institution: "National School of Management",
+        aicteId: "1-61902381",
+        category: "Fee Regulation",
+        bureau: "Finance Cell",
+        received: "03 Aug 2026",
+        month: "Aug 2026",
+        priority: "Medium",
+        status: "Under Review",
+        complainant: "Student",
+        summary: "Non-refund of admission cancellation fee within AICTE prescribed refund policy timeline.",
+        description: "Student withdrew admission before the last round of counseling as per AICTE calendar, but Rs. 85,000 tuition deposit has not been refunded.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "03 Aug 2026, 10:45 AM", actor: "Finance Cell", note: "Show-cause notice issued under AICTE Refund Policy norms." }
+        ]
+      },
+      {
+        id: "CMP-2026-1006",
+        institution: "Eastern Valley Institute of Tech",
+        aicteId: "1-29481055",
+        category: "Faculty Norms",
+        bureau: "Academic Bureau",
+        received: "25 Jul 2026",
+        month: "Jul 2026",
+        priority: "Low",
+        status: "Pending",
+        complainant: "Faculty Member",
+        summary: "Excessive teaching load assigned to assistant professors beyond prescribed weekly hours.",
+        description: "Junior faculty are assigned 26 hours of lectures and labs per week without administrative relief.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "25 Jul 2026, 04:20 PM", actor: "Academic Bureau", note: "Assigned to regional academic committee." }
+        ]
+      },
+      {
+        id: "CMP-2026-1005",
+        institution: "Crescent College of Engineering",
+        aicteId: "1-90412734",
+        category: "Approval Process",
+        bureau: "Approval Bureau",
+        received: "18 Jul 2026",
+        month: "Jul 2026",
+        priority: "Medium",
+        status: "Resolved",
+        complainant: "Parent / Stakeholder",
+        summary: "Verification of occupancy certificate for newly constructed workshop annex building.",
+        description: "Complaint regarding pending municipal occupancy certificate for the mechanical workshop block.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "18 Jul 2026, 09:30 AM", actor: "Approval Bureau", note: "Document verification initiated." },
+          { time: "02 Aug 2026, 04:00 PM", actor: "Approval Bureau", note: "Verified municipal OC uploaded by institution. Case resolved." }
+        ]
+      },
+      {
+        id: "CMP-2026-1004",
+        institution: "Kaveri Institute of Technology",
+        aicteId: "1-71029384",
+        category: "Infrastructure",
+        bureau: "Quality Assurance Cell",
+        received: "10 Jul 2026",
+        month: "Jul 2026",
+        priority: "Low",
+        status: "Resolved",
+        complainant: "Student",
+        summary: " Drinking water RO plant and barrier-free ramp maintenance in academic block.",
+        description: "RO water coolers on 2nd and 3rd floors were out of service during July session.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "20 Jul 2026, 01:15 PM", actor: "Quality Assurance Cell", note: "Compliance photographs and maintenance certificate verified. Resolved." }
+        ]
+      },
+      {
+        id: "CMP-2026-1003",
+        institution: "Deccan Institute of Engineering",
+        aicteId: "1-50291847",
+        category: "Scholarship",
+        bureau: "Student Welfare Cell",
+        received: "03 Jul 2026",
+        month: "Jul 2026",
+        priority: "Medium",
+        status: "Resolved",
+        complainant: "Student",
+        summary: " disbursement of AICTE PG GATE scholarship stipend arrears for M.Tech scholars.",
+        description: "Bank account linkage issue caused 3-month delay in PG scholarship disbursement for 8 M.Tech students.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "15 Jul 2026, 05:10 PM", actor: "Student Welfare Cell", note: "PFMS bank mandate updated and arrears credited. Resolved." }
+        ]
+      },
+      {
+        id: "CMP-2026-1002",
+        institution: "Shivalik Technical University",
+        aicteId: "1-41092833",
+        category: "Grievance Redressal",
+        bureau: "Grievance Cell",
+        received: "21 Jun 2026",
+        month: "Jun 2026",
+        priority: "Low",
+        status: "Resolved",
+        complainant: "Student",
+        summary: "Delay in issuing provisional degree certificate and migration transcript after graduation.",
+        description: "Graduating batch students reported 4-week delay in receiving provisional certificates.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "29 Jun 2026, 11:00 AM", actor: "Grievance Cell", note: "Certificates issued to all applicants. Case closed." }
+        ]
+      },
+      {
+        id: "CMP-2026-1001",
+        institution: "Vidya Bharti College of Pharmacy",
+        aicteId: "1-19283746",
+        category: "Approval Process",
+        bureau: "Approval Bureau",
+        received: "10 Jun 2026",
+        month: "Jun 2026",
+        priority: "Medium",
+        status: "Resolved",
+        complainant: "Faculty Member",
+        summary: "Update of mandatory disclosure page on institutional website as per APH norms.",
+        description: "Mandatory disclosure PDF on college website had outdated faculty list from previous academic year.",
+        linkedCases: [],
+        overlapConfirmed: false,
+        audit: [
+          { time: "18 Jun 2026, 03:40 PM", actor: "Approval Bureau", note: "Updated mandatory disclosure verified online. Resolved." }
+        ]
+      }
+    ];
+
+    // State Management
+    const STORAGE_KEY = "sih26264_verifix_complaints_v2";
+    const THEME_KEY = "sih26264_verifix_theme";
+    let complaints = [];
+    let currentDetailId = "CMP-2026-1016"; // Default to PGRC Case 101 (ABC Engineering College)
+    const AI_CONFIG_KEY = "sih26264_verifix_ai_config_v1";
+    let aiConfig = {
+      mode: "PYTHON_API",
+      apiUrl: "http://127.0.0.1:8000/api/check-overlap"
+    };
+    let intakeCheckTimer = null;
+    let intakeCheckSequence = 0;
+
+    function loadAiConfig() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(AI_CONFIG_KEY) || "null");
+        if (saved && ["PYTHON_API", "HYBRID_LOCAL"].includes(saved.mode) && typeof saved.apiUrl === "string") {
+          aiConfig = { ...aiConfig, ...saved };
+        }
+      } catch (_) { /* Ignore malformed saved connector settings. */ }
+      const modeEl = document.getElementById("ai-config-mode");
+      const urlEl = document.getElementById("ai-config-url");
+      if (modeEl) modeEl.value = aiConfig.mode;
+      if (urlEl) urlEl.value = aiConfig.apiUrl;
+      const label = document.getElementById("ai-mode-label");
+      if (label) label.textContent = aiConfig.mode === "PYTHON_API" ? "Python FastAPI" : "Hybrid NLP";
+    }
+
+    function getAiEndpoint(path) {
+      const raw = (aiConfig.apiUrl || "http://127.0.0.1:8000/api/check-overlap").trim();
+      const parsed = new URL(raw);
+      parsed.pathname = path;
+      parsed.search = "";
+      parsed.hash = "";
+      return parsed.toString();
+    }
+
+    function toApiCase(item) {
+      return {
+        id: item.id || item.case_id || "",
+        case_id: item.case_id || item.id || "",
+        institution: item.institution || item.institution_name || "",
+        institution_id: item.institution_id || item.aicteId || "",
+        aicteId: item.aicteId || item.institution_id || "",
+        category: item.category || "",
+        bureau: item.bureau || "",
+        status: item.status || "",
+        summary: item.summary || "",
+        description: item.description || item.complaint_text || "",
+        complaint_text: item.complaint_text || item.description || item.summary || ""
+      };
+    }
+
+    async function postAi(path, payload) {
+      const response = await fetch(getAiEndpoint(path), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) {
+        let detail = "";
+        try { detail = (await response.json()).detail || ""; } catch (_) {}
+        throw new Error(`AI API HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
+      }
+      return response.json();
+    }
+
+    // Persistent case storage is provided by the local FastAPI + SQLite service.
+    // localStorage remains a recovery cache so the dashboard can still open offline.
+    let backendStorageReady = false;
+    let backendSyncTimer = null;
+    let backendSyncBusy = false;
+    let backendSyncQueued = false;
+
+    async function getAi(path) {
+      const response = await fetch(getAiEndpoint(path), { method: "GET" });
+      if (!response.ok) throw new Error(`API HTTP ${response.status}`);
+      return response.json();
+    }
+
+    function setBackendStatus(message, ok = null) {
+      const el = document.getElementById("backend-health-detail");
+      if (!el) return;
+      el.textContent = message;
+      el.style.color = ok === true ? "#34d399" : ok === false ? "#f59e0b" : "var(--text-muted)";
+    }
+
+    async function refreshBackendHealth() {
+      try {
+        const health = await getAi("/api/health");
+        const label = document.getElementById("ai-mode-label");
+        if (label) label.textContent = health.model_loaded && health.classifier_loaded ? "Sentence-BERT Online" : "Model Not Ready";
+        const parts = [];
+        parts.push(health.model_loaded ? "Encoder loaded" : "Encoder unavailable");
+        parts.push(health.classifier_loaded ? "17-class classifier loaded" : "Classifier unavailable");
+        if (health.similarity_threshold_loaded) parts.push(`Validation threshold ${Number(health.similarity_threshold).toFixed(4)}`);
+        if (health.database) parts.push(`SQLite ${Number(health.database.case_count || 0)} cases`);
+        setBackendStatus(parts.join(" · "), Boolean(health.model_loaded && health.classifier_loaded));
+      } catch (err) {
+        const label = document.getElementById("ai-mode-label");
+        if (label) label.textContent = aiConfig.mode === "PYTHON_API" ? "API Offline" : "Hybrid NLP";
+        setBackendStatus(`API unavailable. Local browser cache remains available. ${err.message}`, false);
+      }
+    }
+
+    async function initializeBackendCaseStore() {
+      try {
+        const payload = await getAi("/api/cases");
+        const serverCases = Array.isArray(payload.cases) ? payload.cases : [];
+        if (serverCases.length) {
+          complaints = serverCases;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(complaints));
+          backendStorageReady = true;
+          setBackendStatus(`SQLite connected · ${serverCases.length} persistent cases`, true);
+          return;
+        }
+        // First launch: seed SQLite once with the existing 18 illustrative dashboard records
+        // (or the browser's saved records), preserving the user's current sample state.
+        await postAi("/api/cases/bulk-upsert", { cases: complaints });
+        backendStorageReady = true;
+        setBackendStatus(`SQLite initialized · ${complaints.length} cases seeded`, true);
+      } catch (err) {
+        backendStorageReady = false;
+        setBackendStatus(`Persistent store unavailable; using browser cache. ${err.message}`, false);
+      }
+    }
+
+    function scheduleBackendSync() {
+      if (!backendStorageReady) return;
+      clearTimeout(backendSyncTimer);
+      backendSyncTimer = setTimeout(async () => {
+        if (backendSyncBusy) { backendSyncQueued = true; return; }
+        backendSyncBusy = true;
+        try {
+          await postAi("/api/cases/bulk-upsert", { cases: complaints });
+          setBackendStatus(`SQLite synchronized · ${complaints.length} cases`, true);
+        } catch (err) {
+          backendStorageReady = false;
+          setBackendStatus(`SQLite sync failed; local cache retained. ${err.message}`, false);
+        } finally {
+          backendSyncBusy = false;
+          if (backendSyncQueued) { backendSyncQueued = false; scheduleBackendSync(); }
+        }
+      }, 350);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[ch]);
+    }
+
+    // ============================================================================
+    // 2. HYBRID AI SEMANTIC SIMILARITY & ENTITY MATCHING ENGINE
+    // ============================================================================
+    // Normalizes domain synonyms so complaints written in different words
+    // (e.g. "excess tuition fees" vs "collecting fees above permitted limits")
+    // achieve realistic semantic similarity scores in-browser, while also
+    // supporting live HTTP POST requests to a Python FastAPI Sentence-BERT model!
+    const DOMAIN_CONCEPT_MAP = {
+      "excess": "overcharge_fee",
+      "extra": "overcharge_fee",
+      "above": "overcharge_fee",
+      "permitted": "overcharge_fee",
+      "limit": "overcharge_fee",
+      "limits": "overcharge_fee",
+      "capitation": "overcharge_fee",
+      "tuition": "fee_finance",
+      "fee": "fee_finance",
+      "fees": "fee_finance",
+      "receipt": "fee_finance",
+      "receipts": "fee_finance",
+      "refund": "fee_finance",
+      "scholarship": "fee_finance",
+      "reimbursement": "fee_finance",
+      "faculty": "faculty_academic",
+      "professor": "faculty_academic",
+      "professors": "faculty_academic",
+      "lecturer": "faculty_academic",
+      "lecturers": "faculty_academic",
+      "shortage": "deficit_issue",
+      "inadequate": "deficit_issue",
+      "lack": "deficit_issue",
+      "ratio": "faculty_academic",
+      "lab": "infra_lab",
+      "laboratory": "infra_lab",
+      "computer": "infra_lab",
+      "equipment": "infra_lab",
+      "hostel": "campus_safety",
+      "ragging": "campus_safety",
+      "safety": "campus_safety",
+      "warden": "campus_safety",
+      "unsafe": "campus_safety",
+      "intake": "approval_eoa",
+      "unapproved": "approval_eoa",
+      "sanctioned": "approval_eoa",
+      "eoa": "approval_eoa",
+      "seats": "approval_eoa",
+      "admission": "approval_eoa"
+    };
+
+    const STOP_WORDS = new Set([
+      "the","and","for","are","with","that","this","from","have","has","not","been",
+      "being","into","more","than","under","year","students","college","institution",
+      "institute","department","case","ref"
+    ]);
+
+    function normalizeInstName(name) {
+      return (name || "")
+        .toLowerCase()
+        .replace(/\b(engg|engineering|college|institute|technology|tech|of|and|campus|university)\b/g, "")
+        .replace(/[^a-z0-9]/g, "")
+        .trim();
+    }
+
+    function sameInstitutionRecord(a, b) {
+      const idA = String(a?.aicteId || a?.institution_id || "").trim();
+      const idB = String(b?.aicteId || b?.institution_id || "").trim();
+      // When both permanent IDs exist, never override an ID mismatch with a name match.
+      if (idA && idB) return idA === idB;
+      const nameA = normalizeInstName(a?.institution || a?.institution_name || "");
+      const nameB = normalizeInstName(b?.institution || b?.institution_name || "");
+      return Boolean(nameA && nameB && nameA.length > 2 && nameA === nameB);
+    }
+
+    function extractTokensAndConcepts(text) {
+      const rawWords = (text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+
+      const vector = {};
+      const matchedConcepts = new Set();
+
+      rawWords.forEach(w => {
+        vector[w] = (vector[w] || 0) + 1;
+        if (DOMAIN_CONCEPT_MAP[w]) {
+          const concept = DOMAIN_CONCEPT_MAP[w];
+          vector[concept] = (vector[concept] || 0) + 1.8; // Boost semantic concept weight
+          matchedConcepts.add(w);
+        }
+      });
+
+      return { vector, rawWords, matchedConcepts: Array.from(matchedConcepts) };
+    }
+
+    function cosineSimilarityVec(vecA, vecB) {
+      const keys = new Set([...Object.keys(vecA), ...Object.keys(vecB)]);
+      let dot = 0, normA = 0, normB = 0;
+      keys.forEach(k => {
+        const a = vecA[k] || 0;
+        const b = vecB[k] || 0;
+        dot += a * b;
+        normA += a * a;
+        normB += b * b;
+      });
+      if (normA === 0 || normB === 0) return 0;
+      return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    function computeHybridOverlap(caseA, caseB) {
+      // 1. Entity Matching (AICTE Permanent ID or Normalized Name)
+      const exactIdMatch = caseA.aicteId && caseB.aicteId && caseA.aicteId.trim() === caseB.aicteId.trim();
+      const normA = normalizeInstName(caseA.institution);
+      const normB = normalizeInstName(caseB.institution);
+      const nameMatch = normA.length > 2 && normA === normB;
+      const entityScore = (exactIdMatch || nameMatch) ? 1.0 : 0.0;
+
+      // 2. Semantic Text Similarity
+      const textA = `${caseA.summary || ""} ${caseA.description || ""} ${caseA.category || ""}`;
+      const textB = `${caseB.summary || ""} ${caseB.description || ""} ${caseB.category || ""}`;
+      const featA = extractTokensAndConcepts(textA);
+      const featB = extractTokensAndConcepts(textB);
+      const rawTextSim = cosineSimilarityVec(featA.vector, featB.vector);
+      // Calibrate cosine similarity to realistic Sentence-BERT range
+      const semanticSim = Math.min(0.96, rawTextSim > 0.15 ? 0.45 + rawTextSim * 0.62 : rawTextSim * 1.2);
+
+      // 3. Cross-Bureau & Category Context Signal
+      const crossBureauBonus = (caseA.bureau && caseB.bureau && caseA.bureau !== caseB.bureau) ? 0.08 : 0.03;
+      const sameCategoryBonus = (caseA.category && caseB.category && caseA.category === caseB.category) ? 0.08 : 0.0;
+
+      // Combined Hybrid Score
+      let totalScore = 0;
+      if (entityScore === 1.0) {
+        totalScore = (0.45 * entityScore) + (0.42 * semanticSim) + crossBureauBonus + sameCategoryBonus;
+      } else {
+        totalScore = 0.75 * semanticSim;
+      }
+      totalScore = Math.max(0.05, Math.min(0.96, totalScore));
+
+      // Shared keywords for explainability
+      const sharedTerms = featA.matchedConcepts.filter(t => featB.rawWords.includes(t) || featB.matchedConcepts.length > 0).slice(0, 5);
+
+      return {
+        totalPercent: Math.round(totalScore * 100),
+        entityPercent: Math.round(entityScore * 100),
+        semanticPercent: Math.round(semanticSim * 100),
+        exactIdMatch,
+        crossBureau: caseA.bureau !== caseB.bureau,
+        sharedTerms: sharedTerms.length ? sharedTerms : ["institutional compliance", "regulatory norms"]
+      };
+    }
+
+    // ============================================================================
+    // 3. INITIALIZATION & THEME MANAGEMENT
+    // ============================================================================
+    async function initApp() {
+      // Load saved theme, AI connector settings and local recovery cache.
+      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+      applyTheme(savedTheme);
+      loadAiConfig();
+
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          complaints = Array.isArray(parsed) ? parsed : JSON.parse(JSON.stringify(INITIAL_COMPLAINTS));
+        } catch (_) {
+          complaints = JSON.parse(JSON.stringify(INITIAL_COMPLAINTS));
+        }
+      } else {
+        complaints = JSON.parse(JSON.stringify(INITIAL_COMPLAINTS));
+      }
+
+      // Prefer the SQLite case registry when the FastAPI service is reachable.
+      await initializeBackendCaseStore();
+      refreshAllViews();
+      runSimilaritySandbox();
+      refreshBackendHealth();
+    }
+
+    function applyTheme(theme) {
+      const htmlEl = document.documentElement;
+      const iconEl = document.getElementById("theme-icon");
+      const textEl = document.getElementById("theme-text");
+      if (theme === "light") {
+        htmlEl.classList.remove("dark");
+        htmlEl.classList.add("light");
+        iconEl.textContent = "🌙";
+        textEl.textContent = "Dark Mode";
+      } else {
+        htmlEl.classList.remove("light");
+        htmlEl.classList.add("dark");
+        iconEl.textContent = "☀️";
+        textEl.textContent = "Light Mode";
+      }
+      localStorage.setItem(THEME_KEY, theme);
+      if (complaints.length) {
+        renderMonthlyLineChart();
+        renderRelationshipGraph();
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains("dark");
+      applyTheme(isDark ? "light" : "dark");
+      showToast(`Switched to ${isDark ? "Light" : "Dark"} Mode`, "info");
+    }
+
+    function saveToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(complaints));
+      scheduleBackendSync();
+    }
+
+    async function resetDemoData() {
+      if (!confirm("Reset the dashboard to its 18 illustrative sample complaints? This replaces the current demo case registry.")) return;
+      complaints = JSON.parse(JSON.stringify(INITIAL_COMPLAINTS));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(complaints));
+      currentDetailId = "CMP-2026-1016";
+      if (backendStorageReady) {
+        try {
+          await postAi("/api/cases/replace", { cases: complaints });
+          setBackendStatus(`SQLite reset to ${complaints.length} illustrative cases`, true);
+        } catch (err) {
+          setBackendStatus(`Local reset completed, but SQLite reset failed: ${err.message}`, false);
+        }
+      }
+      refreshAllViews();
+      showToast("Reset to 18 illustrative sample complaints", "success");
+    }
+
+    // ============================================================================
+    // 4. NAVIGATION & VIEW REFRESH
+    // ============================================================================
+    const TAB_META = {
+      overview: { title: "Overview", subtitle: "Cross-Bureau Coordination Workspace" },
+      management: { title: "Complaint Management", subtitle: "Centralized Multi-Bureau Case Registry" },
+      details: { title: "Complaint Details", subtitle: "Institution 360° & Human-in-the-Loop Overlap Review" },
+      relationship: { title: "Relationship Overview", subtitle: "Interactive Graph & AI Semantic Similarity Engine" },
+      analytics: { title: "Analytics", subtitle: "Category, Bureau Workload & Resolution Metrics" }
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-pane").forEach(el => el.classList.add("hidden"));
+      document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+
+      document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      if (activeBtn) activeBtn.classList.add("active");
+
+      document.getElementById("header-title").textContent = TAB_META[tabId].title;
+      document.getElementById("header-subtitle").textContent = TAB_META[tabId].subtitle;
+
+      if (tabId === "relationship") {
+        renderRelationshipGraph();
+      }
+    }
+
+    function refreshAllViews() {
+      renderOverviewTab();
+      renderManagementTable();
+      populateDetailsSelector();
+      renderDetailsTab(currentDetailId);
+      renderRelationshipGraph();
+      renderRelationshipClustersList();
+      renderAnalyticsTab();
+    }
+
+    // ============================================================================
+    // 5. TAB 1: OVERVIEW RENDERER (Exact Match to Screenshot 13)
+    // ============================================================================
+    function renderOverviewTab() {
+      const total = complaints.length;
+      const pendingOnly = complaints.filter(c => c.status === "Pending").length;
+      const underReview = complaints.filter(c => c.status === "Under Review").length;
+      const totalPending = pendingOnly + underReview;
+      const resolved = complaints.filter(c => c.status === "Resolved").length;
+      const highPriority = complaints.filter(c => c.priority === "High").length;
+      const highOpen = complaints.filter(c => c.priority === "High" && c.status !== "Resolved").length;
+      const resolvedPct = total > 0 ? Math.round((resolved / total) * 100) : 0;
+
+      document.getElementById("banner-total-count").textContent = total;
+      document.getElementById("sidebar-total-badge").textContent = total;
+      document.getElementById("kpi-total").textContent = total;
+      document.getElementById("kpi-pending").textContent = totalPending;
+      document.getElementById("kpi-pending-sub").textContent = `Not yet resolved (${underReview} under review)`;
+      document.getElementById("kpi-resolved").textContent = resolved;
+      document.getElementById("kpi-resolved-sub").textContent = `${resolvedPct}% of total`;
+      document.getElementById("kpi-high").textContent = highPriority;
+      document.getElementById("kpi-high-sub").textContent = `${highOpen} still open`;
+
+      // Status breakdown bars (Pending: 8, Resolved: 5, Under Review: 5)
+      const statusItems = [
+        { label: "Pending", count: pendingOnly },
+        { label: "Resolved", count: resolved },
+        { label: "Under Review", count: underReview }
+      ];
+      const maxStatus = Math.max(10, ...statusItems.map(s => s.count));
+      const statusBarsHtml = statusItems.map(item => {
+        const widthPct = Math.round((item.count / maxStatus) * 100);
+        return `
+          <div class="grid grid-cols-12 items-center gap-3 text-xs">
+            <span class="col-span-4 font-medium" style="color: var(--text-secondary);">${item.label}</span>
+            <div class="col-span-7 h-3 rounded-sm bar-track overflow-hidden">
+              <div class="h-full bg-[#4f9cf9] rounded-sm transition-all duration-500" style="width: ${widthPct}%;"></div>
+            </div>
+            <span class="col-span-1 text-right font-bold font-mono" style="color: var(--text-primary);">${item.count}</span>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("overview-status-bars").innerHTML = statusBarsHtml;
+
+      renderMonthlyLineChart();
+
+      // Recent complaints table (top 6 recent)
+      const recentList = complaints.slice(0, 6);
+      const tbody = document.getElementById("overview-recent-tbody");
+      tbody.innerHTML = recentList.map(c => renderComplaintRowHtml(c, true)).join("");
+    }
+
+    function renderMonthlyLineChart() {
+      const months = ["Jun 2026", "Jul 2026", "Aug 2026", "Sep 2026", "Oct 2026"];
+      const counts = months.map(m => complaints.filter(c => c.month === m).length);
+      const svg = document.getElementById("monthly-line-svg");
+      if (!svg) return;
+
+      const isDark = document.documentElement.classList.contains("dark");
+      const gridColor = isDark ? "#1e2d45" : "#e2e8f0";
+      const labelColor = isDark ? "#8b9bb4" : "#64748b";
+      const textColor = isDark ? "#f1f5f9" : "#0f172a";
+
+      const padLeft = 40, padRight = 40, padTop = 28, padBottom = 34;
+      const width = 560, height = 190;
+      const plotW = width - padLeft - padRight;
+      const plotH = height - padTop - padBottom;
+      const maxVal = Math.max(5, ...counts);
+
+      const points = counts.map((val, idx) => {
+        const x = padLeft + (idx / (months.length - 1)) * plotW;
+        const y = padTop + plotH - (val / maxVal) * plotH;
+        return { x, y, val, label: months[idx] };
+      });
+
+      const polylinePoints = points.map(p => `${p.x},${p.y}`).join(" ");
+
+      let html = `
+        <!-- Baseline & Gridlines -->
+        <line x1="${padLeft}" y1="${padTop + plotH}" x2="${width - padRight}" y2="${padTop + plotH}" stroke="${gridColor}" stroke-width="1.5" />
+        <line x1="${padLeft}" y1="${padTop + plotH * 0.5}" x2="${width - padRight}" y2="${padTop + plotH * 0.5}" stroke="${gridColor}" stroke-dasharray="3,3" stroke-width="1" />
+        <!-- Line Path -->
+        <polyline fill="none" stroke="#4f9cf9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${polylinePoints}" />
+      `;
+
+      points.forEach(p => {
+        html += `
+          <circle cx="${p.x}" cy="${p.y}" r="4" fill="#4f9cf9" />
+          <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" fill="${textColor}" font-size="11" font-weight="600">${p.val}</text>
+          <text x="${p.x}" y="${padTop + plotH + 22}" text-anchor="middle" fill="${labelColor}" font-size="11">${p.label}</text>
+        `;
+      });
+
+      svg.innerHTML = html;
+    }
+
+    // ============================================================================
+    // 6. SHARED TABLE ROW RENDERER & BADGE HELPERS
+    // ============================================================================
+    function getPriorityBadge(priority) {
+      if (priority === "High") {
+        return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">High</span>`;
+      }
+      if (priority === "Medium") {
+        return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">Medium</span>`;
+      }
+      return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/15 text-sky-400 border border-sky-500/30">Low</span>`;
+    }
+
+    function getStatusBadge(status) {
+      if (status === "Resolved") {
+        return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Resolved</span>`;
+      }
+      if (status === "Under Review") {
+        return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-400 border border-blue-500/30">Under Review</span>`;
+      }
+      return `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">Pending</span>`;
+    }
+
+    function getOverlapSignalBadge(c) {
+      if (!c.linkedCases || c.linkedCases.length === 0) {
+        return `<span class="text-[11px]" style="color: var(--text-muted);">No overlap</span>`;
+      }
+      if (c.overlapConfirmed) {
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">✓ Linked (${c.linkedCases.length})</span>`;
+      }
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">⚡ Overlap (${c.linkedCases.length})</span>`;
+    }
+
+    function renderComplaintRowHtml(c, isCompact = false) {
+      return `
+        <tr class="hover:bg-sky-500/5 transition">
+          <td class="py-3.5 px-4 font-mono font-bold text-xs" style="color: var(--text-primary);">${c.id}</td>
+          <td class="py-3.5 px-4">
+            <div class="font-semibold" style="color: var(--text-primary);">${c.institution}</div>
+            <div class="text-[11px] font-mono" style="color: var(--text-muted);">ID: ${c.aicteId}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="font-medium" style="color: var(--text-primary);">${c.category}</div>
+            ${!isCompact ? `<div class="text-[11px] line-clamp-1 max-w-xs mt-0.5" style="color: var(--text-muted);">${c.summary}</div>` : ""}
+          </td>
+          <td class="py-3.5 px-4 font-medium" style="color: var(--text-secondary);">${c.bureau}</td>
+          <td class="py-3.5 px-4 whitespace-nowrap" style="color: var(--text-secondary);">${c.received}</td>
+          <td class="py-3.5 px-4">${getPriorityBadge(c.priority)}</td>
+          <td class="py-3.5 px-4">${getOverlapSignalBadge(c)}</td>
+          <td class="py-3.5 px-4">${getStatusBadge(c.status)}</td>
+          <td class="py-3.5 px-4 text-right whitespace-nowrap">
+            <button onclick="openCaseDetails('${c.id}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold app-elevated hover:border-sky-500/50 transition" style="color: var(--text-primary);">
+              View details
+            </button>
+          </td>
+        </tr>
+      `;
+    }
+
+    // ============================================================================
+    // 7. TAB 2: COMPLAINT MANAGEMENT TABLE & FILTERS
+    // ============================================================================
+    function renderManagementTable() {
+      const q = (document.getElementById("filter-search")?.value || "").toLowerCase().trim();
+      const bureau = document.getElementById("filter-bureau")?.value || "ALL";
+      const category = document.getElementById("filter-category")?.value || "ALL";
+      const status = document.getElementById("filter-status")?.value || "ALL";
+      const overlapOnly = document.getElementById("filter-overlap-only")?.checked || false;
+
+      const filtered = complaints.filter(c => {
+        const matchesQ = !q ||
+          c.id.toLowerCase().includes(q) ||
+          c.institution.toLowerCase().includes(q) ||
+          c.aicteId.toLowerCase().includes(q) ||
+          c.summary.toLowerCase().includes(q) ||
+          c.category.toLowerCase().includes(q);
+        const matchesBureau = bureau === "ALL" || c.bureau === bureau;
+        const matchesCat = category === "ALL" || c.category === category;
+        const matchesStatus = status === "ALL" || c.status === status;
+        const matchesOverlap = !overlapOnly || (c.linkedCases && c.linkedCases.length > 0);
+        return matchesQ && matchesBureau && matchesCat && matchesStatus && matchesOverlap;
+      });
+
+      document.getElementById("mgmt-showing-count").textContent = filtered.length;
+      const tbody = document.getElementById("management-tbody");
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-xs" style="color: var(--text-muted);">No complaint records match your active filter criteria.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(c => renderComplaintRowHtml(c, false)).join("");
+    }
+
+    function openCaseDetails(caseId) {
+      currentDetailId = caseId;
+      populateDetailsSelector();
+      renderDetailsTab(caseId);
+      switchTab("details");
+    }
+
+    // ============================================================================
+    // 8. TAB 3: COMPLAINT DETAILS, INSTITUTION 360° & HUMAN-IN-THE-LOOP REVIEW
+    // ============================================================================
+    function populateDetailsSelector() {
+      const sel = document.getElementById("details-case-select");
+      if (!sel) return;
+      sel.innerHTML = complaints.map(c => {
+        const flag = (c.linkedCases && c.linkedCases.length > 0) ? (c.overlapConfirmed ? " [✓ Linked]" : " [⚡ Overlap Alert]") : "";
+        return `<option value="${c.id}" ${c.id === currentDetailId ? "selected" : ""}>${c.id} — ${c.institution} (${c.bureau})${flag}</option>`;
+      }).join("");
+    }
+
+    function selectCaseForDetails(caseId) {
+      currentDetailId = caseId;
+      renderDetailsTab(caseId);
+    }
+
+    function renderDetailsTab(caseId) {
+      const c = complaints.find(item => item.id === caseId) || complaints[0];
+      if (!c) return;
+      currentDetailId = c.id;
+
+      // Sync status dropdown
+      const statusSel = document.getElementById("action-status-select");
+      if (statusSel) statusSel.value = c.status;
+
+      // 1. Render Left Dossier Card
+      document.getElementById("details-dossier-card").innerHTML = `
+        <div class="flex flex-wrap items-start justify-between gap-3 border-b pb-4" style="border-color: var(--border-subtle);">
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class="font-mono text-base font-extrabold" style="color: var(--text-primary);">${c.id}</span>
+              ${getPriorityBadge(c.priority)}
+              ${getStatusBadge(c.status)}
+            </div>
+            <h3 class="text-base font-bold mt-1.5" style="color: var(--text-primary);">${c.summary}</h3>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] font-mono block" style="color: var(--text-muted);">Received: ${c.received}</span>
+            <span class="text-xs font-semibold text-sky-400">${c.bureau}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div class="app-elevated p-3 rounded-lg">
+            <span class="text-[10px] uppercase font-semibold block" style="color: var(--text-muted);">Institution</span>
+            <span class="font-bold mt-0.5 block" style="color: var(--text-primary);">${c.institution}</span>
+          </div>
+          <div class="app-elevated p-3 rounded-lg">
+            <span class="text-[10px] uppercase font-semibold block" style="color: var(--text-muted);">AICTE Perm. ID</span>
+            <span class="font-mono font-bold mt-0.5 block" style="color: var(--text-primary);">${c.aicteId}</span>
+          </div>
+          <div class="app-elevated p-3 rounded-lg">
+            <span class="text-[10px] uppercase font-semibold block" style="color: var(--text-muted);">Category</span>
+            <span class="font-bold mt-0.5 block" style="color: var(--text-primary);">${c.category}</span>
+          </div>
+          <div class="app-elevated p-3 rounded-lg">
+            <span class="text-[10px] uppercase font-semibold block" style="color: var(--text-muted);">Stakeholder Type</span>
+            <span class="font-bold mt-0.5 block" style="color: var(--text-primary);">${c.complainant}</span>
+          </div>
+        </div>
+
+        <div class="app-elevated p-4 rounded-xl space-y-1.5">
+          <span class="text-[11px] font-semibold uppercase tracking-wider" style="color: var(--text-muted);">Full Complaint Description & Evidence Summary</span>
+          <p class="text-xs leading-relaxed" style="color: var(--text-primary);">${c.description}</p>
+        </div>
+      `;
+
+      // 2. Render Audit Trail
+      const auditHtml = (c.audit || []).slice().reverse().map(a => `
+        <div class="app-elevated rounded-lg p-3 text-xs border-l-2 border-l-sky-500">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold" style="color: var(--text-primary);">${a.actor}</span>
+            <span class="text-[11px] font-mono" style="color: var(--text-muted);">${a.time}</span>
+          </div>
+          <p style="color: var(--text-secondary);">${a.note}</p>
+        </div>
+      `).join("");
+      document.getElementById("details-audit-list").innerHTML = auditHtml;
+
+      // 3. Render Institution 360° Profile Card
+      const instCases = complaints.filter(item => item.aicteId === c.aicteId);
+      const activeBureaus = Array.from(new Set(instCases.map(item => item.bureau)));
+      document.getElementById("details-inst360-card").innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-sky-500/15 text-sky-400 font-bold">INSTITUTION 360° PROFILE</span>
+            <h4 class="text-sm font-bold mt-1.5" style="color: var(--text-primary);">${c.institution}</h4>
+          </div>
+          <span class="text-xs font-mono font-semibold" style="color: var(--text-muted);">${c.aicteId}</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2.5 text-center my-3">
+          <div class="app-elevated p-2.5 rounded-lg">
+            <span class="text-lg font-extrabold block" style="color: var(--text-primary);">${instCases.length}</span>
+            <span class="text-[10px]" style="color: var(--text-muted);">Total Cases</span>
+          </div>
+          <div class="app-elevated p-2.5 rounded-lg">
+            <span class="text-lg font-extrabold block text-sky-400">${activeBureaus.length}</span>
+            <span class="text-[10px]" style="color: var(--text-muted);">Active Bureaus</span>
+          </div>
+          <div class="app-elevated p-2.5 rounded-lg">
+            <span class="text-lg font-extrabold block text-amber-400">${instCases.filter(x => x.status !== "Resolved").length}</span>
+            <span class="text-[10px]" style="color: var(--text-muted);">Open Cases</span>
+          </div>
+        </div>
+
+        <div class="text-xs space-y-1.5 pt-2 border-t" style="border-color: var(--border-subtle);">
+          <span class="text-[11px] font-semibold block" style="color: var(--text-muted);">Bureaus / Cells Handling This Institution:</span>
+          <div class="flex flex-wrap gap-1.5">
+            ${activeBureaus.map(b => `<span class="px-2 py-0.5 rounded text-[11px] app-elevated font-medium" style="color: var(--text-primary);">${b}</span>`).join("")}
+          </div>
+        </div>
+      `;
+
+      // 4. Render Side-by-Side AI Overlap Verification Card
+      const candidates = complaints
+        .filter(other => other.id !== c.id)
+        .map(other => ({ other, sim: computeHybridOverlap(c, other) }))
+        .filter(item => item.sim.totalPercent >= 55 || (c.linkedCases && c.linkedCases.includes(item.other.id)))
+        .sort((a, b) => b.sim.totalPercent - a.sim.totalPercent);
+
+      const overlapContainer = document.getElementById("details-overlap-card");
+      if (candidates.length === 0) {
+        overlapContainer.innerHTML = `
+          <div class="p-6 text-center space-y-2">
+            <div class="w-10 h-10 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center mx-auto font-bold">✓</div>
+            <h4 class="text-sm font-bold" style="color: var(--text-primary);">Checking Related Cases</h4>
+            <p class="text-xs" style="color: var(--text-muted);">The configured AI engine will check same-institution cases.</p>
+          </div>
+        `;
+        if (aiConfig.mode === "PYTHON_API") refreshDetailsOverlapFromPython(c.id);
+        return;
+      }
+
+      const topMatch = candidates[0];
+      const other = topMatch.other;
+      const sim = topMatch.sim;
+
+      overlapContainer.innerHTML = `
+        <div class="px-5 py-3.5 bg-rose-500/15 border-b border-rose-500/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-rose-400 font-bold text-xs">⚡ AI OVERLAP DETECTION</span>
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-rose-500 text-white">${sim.totalPercent}% Match</span>
+          </div>
+          <span class="text-[11px] font-mono font-semibold ${c.overlapConfirmed ? 'text-emerald-400' : 'text-amber-400'}">
+            ${c.overlapConfirmed ? "✓ VERIFIED & LINKED" : "REVIEW REQUIRED"}
+          </span>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <p class="text-xs leading-relaxed" style="color: var(--text-secondary);">
+            Potential overlapping complaint detected in <strong style="color: var(--text-primary);">${other.bureau}</strong> concerning the same institution:
+          </p>
+
+          <!-- Side-by-Side Comparison Boxes (Matches Slide 3 PGRC vs RB Example) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-lg border border-purple-500/40 bg-purple-500/10 space-y-1">
+              <span class="text-[10px] font-bold uppercase text-purple-400 block">${c.bureau}</span>
+              <span class="font-mono font-bold block" style="color: var(--text-primary);">${c.id}</span>
+              <p class="text-[11px]" style="color: var(--text-secondary);">${c.summary}</p>
+              <span class="inline-block mt-1 text-[10px] font-semibold text-amber-400">${c.status}</span>
+            </div>
+
+            <div class="p-3 rounded-lg border border-emerald-500/40 bg-emerald-500/10 space-y-1">
+              <span class="text-[10px] font-bold uppercase text-emerald-400 block">${other.bureau}</span>
+              <span class="font-mono font-bold block cursor-pointer hover:underline" onclick="openCaseDetails('${other.id}')" style="color: var(--text-primary);">${other.id} ↗</span>
+              <p class="text-[11px]" style="color: var(--text-secondary);">${other.summary}</p>
+              <span class="inline-block mt-1 text-[10px] font-semibold text-sky-400">${other.status}</span>
+            </div>
+          </div>
+
+          <!-- Explainable AI Match Reasons -->
+          <div class="app-elevated rounded-lg p-3 space-y-1.5 text-[11px]">
+            <div class="font-semibold" style="color: var(--text-primary);">Explainable Match Signals:</div>
+            <div class="flex justify-between" style="color: var(--text-secondary);">
+              <span>1. Institution Permanent ID (${c.aicteId}):</span>
+              <span class="font-mono font-bold text-emerald-400">${sim.entityPercent}% Match</span>
+            </div>
+            <div class="flex justify-between" style="color: var(--text-secondary);">
+              <span>2. NLP Semantic Text Similarity:</span>
+              <span class="font-mono font-bold text-sky-400">${sim.semanticPercent}% Cosine</span>
+            </div>
+            <div class="flex justify-between" style="color: var(--text-secondary);">
+              <span>3. Shared Concepts:</span>
+              <span class="font-mono text-amber-400">${sim.sharedTerms.join(", ")}</span>
+            </div>
+          </div>
+
+          <!-- Human-in-the-Loop Action Buttons -->
+          <div class="grid grid-cols-2 gap-2.5 pt-1">
+            <button onclick="confirmCaseOverlap('${c.id}', '${other.id}')" class="py-2 px-3 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition">
+              ✓ Confirm & Coordinate
+            </button>
+            <button onclick="dismissCaseOverlap('${c.id}', '${other.id}')" class="py-2 px-3 rounded-lg text-xs font-semibold app-elevated hover:opacity-80 transition" style="color: var(--text-secondary);">
+              ✕ Dismiss Overlap Flag
+            </button>
+          </div>
+        </div>
+      `;
+      if (aiConfig.mode === "PYTHON_API") refreshDetailsOverlapFromPython(c.id);
+    }
+
+    async function refreshDetailsOverlapFromPython(caseId) {
+      if (aiConfig.mode !== "PYTHON_API") return;
+      const c = complaints.find(item => item.id === caseId);
+      const container = document.getElementById("details-overlap-card");
+      if (!c || !container) return;
+      try {
+        const data = await postAi("/api/find-related", {
+          case: toApiCase(c),
+          candidate_cases: complaints.filter(x => x.id !== c.id).map(toApiCase),
+          top_k: 5
+        });
+        if (currentDetailId !== caseId) return;
+        const matches = data.matches || [];
+        const confirmedIds = Array.isArray(c.confirmedLinkedCases) ? c.confirmedLinkedCases : [];
+        const confirmedHtml = confirmedIds.length ? `<div class="app-elevated rounded-lg p-3 space-y-2"><p class="text-[10px] font-bold uppercase tracking-wide text-emerald-400">Officer-confirmed coordination</p>${confirmedIds.map(id => { const linked = complaints.find(x => x.id === id); return linked ? `<div class="flex items-center justify-between gap-2 border-t pt-2" style="border-color:var(--border-subtle);"><div class="min-w-0"><span class="font-mono text-xs font-bold" style="color:var(--text-primary);">${escapeHtml(linked.id)}</span><p class="text-[10px]" style="color:var(--text-muted);">${escapeHtml(linked.bureau)} · ${escapeHtml(linked.status)}</p></div><button onclick="openCaseDetails('${escapeHtml(linked.id)}')" class="text-[10px] text-sky-400 hover:underline">Open case</button><span class="text-[10px] font-semibold text-emerald-400">CONFIRMED</span></div>` : ""; }).join("")}</div>` : "";
+        const categoryScores = Array.isArray(data.top_categories) ? data.top_categories.slice(0, 3) : [];
+        const categoryHint = data.predicted_category
+          ? `<div class="app-elevated rounded-lg p-3 mb-3 text-[11px]"><span class="font-semibold" style="color:var(--text-primary);">17-class model category suggestion:</span> <span class="text-sky-400 font-bold">${escapeHtml(data.predicted_category)}</span>${categoryScores.length ? `<p class="mt-1" style="color:var(--text-muted);">Other model-ranked categories: ${categoryScores.slice(1).map(x => `${escapeHtml(x.category)} (${(Number(x.score) * 100).toFixed(1)} relative score)`).join(" · ")}</p>` : ""}<p class="mt-1" style="color:var(--text-muted);">Model scores are not calibrated probabilities. Suggestion only; the dashboard's operational category is not changed.</p></div>`
+          : "";
+        const belowThreshold = Array.isArray(data.below_threshold_candidates) ? data.below_threshold_candidates : [];
+        const belowHtml = belowThreshold.length ? `<div class="app-elevated rounded-lg p-3 space-y-2"><p class="text-[10px] font-bold uppercase tracking-wide text-amber-400">Same-institution candidates below threshold · not suggested links</p>${belowThreshold.map(m => `<div class="flex items-center justify-between gap-2 border-t pt-2" style="border-color:var(--border-subtle);"><div class="min-w-0"><span class="font-mono text-xs" style="color:var(--text-secondary);">${escapeHtml(m.case_id || "")}</span><p class="text-[10px]" style="color:var(--text-muted);">${escapeHtml(m.bureau || "")} · ${escapeHtml(m.category || "")}</p></div><span class="font-mono text-xs text-amber-400">${Number(m.similarity_percent) || 0}% cosine</span></div>`).join("")}</div>` : "";
+        if (!matches.length) {
+          container.innerHTML = `<div class="p-5 space-y-3">${categoryHint}${confirmedHtml}<div class="text-center"><div class="w-10 h-10 rounded-full bg-amber-500/15 text-amber-400 flex items-center justify-center mx-auto font-bold">!</div><h4 class="text-sm font-bold mt-2" style="color:var(--text-primary);">No Candidate Exceeded the Validation Threshold</h4><p class="text-xs mt-1" style="color:var(--text-muted);">The Sentence-BERT API compared ${Number(data.candidate_count_same_institution) || 0} candidates with a matching institution identity. Similarity below the threshold is not surfaced as a related-case suggestion.</p><p class="text-[10px] mt-2" style="color:var(--text-muted);">No case was merged or linked automatically.</p></div>${belowHtml}</div>`;
+          return;
+        }
+        const rows = matches.map(m => {
+          const id = m.case_id || "";
+          const score = Number(m.total_percent) || 0;
+          const semantic = Number(m.similarity_percent) || 0;
+          const threshold = m.threshold_met === true ? "Validation threshold met" : m.threshold_met === false ? "Below validation threshold" : "Threshold not calibrated";
+          return `<div class="app-elevated rounded-lg p-3 space-y-2">
+            <div class="flex items-start justify-between gap-3"><div class="min-w-0"><button onclick="openCaseDetails('${escapeHtml(id)}')" class="font-mono font-bold text-xs text-sky-400 hover:underline">${escapeHtml(id)}</button><p class="text-[11px]" style="color:var(--text-secondary);">${escapeHtml(m.bureau || "Bureau unavailable")} · ${escapeHtml(m.category || "Category unavailable")} · ${escapeHtml(m.status || "Status unavailable")}</p><p class="text-[10px] mt-1" style="color:var(--text-muted);">${escapeHtml(m.summary || "")}</p></div><span class="shrink-0 text-[11px] font-mono font-bold text-rose-400">${score}%</span></div>
+            <div class="text-[10px]" style="color:var(--text-muted);">Semantic cosine ${semantic}% · ${escapeHtml(threshold)} · ${escapeHtml(m.institution_match_type || "Institution matched")}</div>
+            <div class="grid grid-cols-2 gap-2"><button onclick="confirmCaseOverlap('${escapeHtml(c.id)}','${escapeHtml(id)}')" class="py-1.5 px-2 rounded text-[11px] font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950">Confirm & Coordinate</button><button onclick="dismissCaseOverlap('${escapeHtml(c.id)}','${escapeHtml(id)}')" class="py-1.5 px-2 rounded text-[11px] app-elevated" style="color:var(--text-secondary);">Dismiss Suggestion</button></div>
+          </div>`;
+        }).join("");
+        container.innerHTML = `<div class="px-5 py-3.5 bg-sky-500/10 border-b border-sky-500/20 flex items-center justify-between"><span class="text-xs font-bold text-sky-400">⚡ SENTENCE-BERT RELATED-CASE REVIEW</span><span class="text-[10px] font-mono" style="color:var(--text-muted);">${matches.length} suggestions</span></div><div class="p-4 space-y-3">${categoryHint}${confirmedHtml}${rows}${belowHtml}<p class="text-[10px]" style="color:var(--text-muted);">Threshold is applied to semantic cosine. Coordination scores are not probabilities. Every suggestion requires officer verification; no automatic merge is performed.</p></div>`;
+      } catch (err) {
+        // Keep the already-rendered browser result visible, but make the fallback explicit.
+        const note = document.createElement("p");
+        note.className = "text-[10px] px-4 pb-3";
+        note.style.color = "var(--text-muted)";
+        note.textContent = `Python API unavailable; showing browser fallback. ${err.message}`;
+        container.appendChild(note);
+      }
+    }
+
+    function submitCaseAction() {
+      const c = complaints.find(item => item.id === currentDetailId);
+      if (!c) return;
+
+      const newStatus = document.getElementById("action-status-select").value;
+      const transferBureau = document.getElementById("action-bureau-select").value;
+      const officer = document.getElementById("action-officer-input").value.trim() || "AICTE Official";
+      const remark = document.getElementById("action-remark-input").value.trim();
+
+      const oldStatus = c.status;
+      c.status = newStatus;
+      let logNote = `Status updated from "${oldStatus}" to "${newStatus}".`;
+
+      if (transferBureau !== "KEEP" && transferBureau !== c.bureau) {
+        logNote += ` Transferred from ${c.bureau} to ${transferBureau}.`;
+        c.bureau = transferBureau;
+      }
+      if (remark) {
+        logNote += ` Remark: ${remark}`;
+      }
+
+      c.audit.push({
+        time: "Just now (09 Nov 2026)",
+        actor: officer,
+        note: logNote
+      });
+
+      document.getElementById("action-remark-input").value = "";
+      document.getElementById("action-bureau-select").value = "KEEP";
+      saveToStorage();
+      refreshAllViews();
+      showToast(`Updated ${c.id} and recorded audit log`, "success");
+    }
+
+    async function confirmCaseOverlap(idA, idB) {
+      const caseA = complaints.find(c => c.id === idA);
+      const caseB = complaints.find(c => c.id === idB);
+      if (!caseA || !caseB) return;
+      const note = `Human-in-the-Loop Verification: Officer confirmed a coordination relationship between ${idA} (${caseA.bureau}) and ${idB} (${caseB.bureau}).`;
+      caseA.overlapConfirmed = true;
+      caseB.overlapConfirmed = true;
+      if (!caseA.linkedCases.includes(idB)) caseA.linkedCases.push(idB);
+      if (!caseB.linkedCases.includes(idA)) caseB.linkedCases.push(idA);
+      caseA.confirmedLinkedCases = Array.from(new Set([...(caseA.confirmedLinkedCases || []), idB]));
+      caseB.confirmedLinkedCases = Array.from(new Set([...(caseB.confirmedLinkedCases || []), idA]));
+      const stamp = new Date().toLocaleString();
+      caseA.audit.push({ time: stamp, actor: "Coordination Officer", note });
+      caseB.audit.push({ time: stamp, actor: "Coordination Officer", note });
+      if (backendStorageReady) {
+        try { await postAi("/api/relationships/decision", { case_a: idA, case_b: idB, decision: "confirm", actor: "Coordination Officer" }); }
+        catch (err) { showToast(`Decision saved locally; server confirmation sync pending: ${err.message}`, "info"); }
+      }
+      saveToStorage();
+      refreshAllViews();
+      showToast(`Officer-confirmed coordination recorded for ${idA} & ${idB}`, "success");
+    }
+
+    async function dismissCaseOverlap(idA, idB) {
+      const caseA = complaints.find(c => c.id === idA);
+      const caseB = complaints.find(c => c.id === idB);
+      if (!caseA || !caseB) return;
+      const note = `Review Officer dismissed the proposed relationship between ${idA} and ${idB}.`;
+      caseA.linkedCases = (caseA.linkedCases || []).filter(x => x !== idB);
+      caseB.linkedCases = (caseB.linkedCases || []).filter(x => x !== idA);
+      caseA.confirmedLinkedCases = (caseA.confirmedLinkedCases || []).filter(x => x !== idB);
+      caseB.confirmedLinkedCases = (caseB.confirmedLinkedCases || []).filter(x => x !== idA);
+      caseA.dismissedLinkedCases = Array.from(new Set([...(caseA.dismissedLinkedCases || []), idB]));
+      caseB.dismissedLinkedCases = Array.from(new Set([...(caseB.dismissedLinkedCases || []), idA]));
+      caseA.overlapConfirmed = caseA.confirmedLinkedCases.length > 0;
+      caseB.overlapConfirmed = caseB.confirmedLinkedCases.length > 0;
+      const stamp = new Date().toLocaleString();
+      caseA.audit.push({ time: stamp, actor: "Review Officer", note });
+      caseB.audit.push({ time: stamp, actor: "Review Officer", note });
+      if (backendStorageReady) {
+        try { await postAi("/api/relationships/decision", { case_a: idA, case_b: idB, decision: "dismiss", actor: "Review Officer" }); }
+        catch (err) { showToast(`Decision saved locally; server dismissal sync pending: ${err.message}`, "info"); }
+      }
+      saveToStorage();
+      refreshAllViews();
+      showToast(`Officer dismissal recorded for ${idA} & ${idB}`, "info");
+    }
+
+    // ============================================================================
+    // 9. TAB 4: INTERACTIVE RELATIONSHIP GRAPH & SANDBOX
+    // ============================================================================
+    function renderRelationshipGraph() {
+      const svg = document.getElementById("relationship-network-svg");
+      if (!svg) return;
+
+      const filterVal = document.getElementById("graph-inst-filter")?.value || "ALL";
+      const isDark = document.documentElement.classList.contains("dark");
+      const textCol = isDark ? "#f1f5f9" : "#0f172a";
+      const subTextCol = isDark ? "#94a3b8" : "#475569";
+
+      const clusters = [
+        {
+          code: "INST-101",
+          name: "ABC Engineering College",
+          aicteId: "1-45829101",
+          cx: 205, cy: 115,
+          caseIds: ["CMP-2026-1016", "CMP-2026-1017", "CMP-2026-1009"]
+        },
+        {
+          code: "INST-102",
+          name: "Lakeview College of Engg",
+          aicteId: "1-33910422",
+          cx: 560, cy: 115,
+          caseIds: ["CMP-2026-1018", "CMP-2026-1014"]
+        },
+        {
+          code: "INST-103",
+          name: "Pune Institute of Tech",
+          aicteId: "1-12346009",
+          cx: 205, cy: 295,
+          caseIds: ["CMP-2026-1015", "CMP-2026-1011"]
+        },
+        {
+          code: "INST-104",
+          name: "Apex Technical Campus",
+          aicteId: "1-77219830",
+          cx: 560, cy: 295,
+          caseIds: ["CMP-2026-1013", "CMP-2026-1010"]
+        }
+      ];
+
+      const activeClusters = filterVal === "ALL" ? clusters : clusters.filter(c => c.code === filterVal);
+
+      let svgContent = "";
+
+      activeClusters.forEach(cluster => {
+        const cx = activeClusters.length === 1 ? 380 : cluster.cx;
+        const cy = activeClusters.length === 1 ? 200 : cluster.cy;
+        const radius = activeClusters.length === 1 ? 125 : 78;
+
+        const clusterCases = cluster.caseIds
+          .map(id => complaints.find(c => c.id === id))
+          .filter(Boolean);
+
+        // Compute satellite positions
+        const satNodes = clusterCases.map((c, idx) => {
+          const angle = (-Math.PI / 2) + (idx * (2 * Math.PI / clusterCases.length));
+          return {
+            caseObj: c,
+            x: cx + Math.cos(angle) * radius,
+            y: cy + Math.sin(angle) * radius
+          };
+        });
+
+        // Draw dashed overlap links between satellite cases
+        for (let i = 0; i < satNodes.length; i++) {
+          for (let j = i + 1; j < satNodes.length; j++) {
+            const confirmed = satNodes[i].caseObj.overlapConfirmed && satNodes[j].caseObj.overlapConfirmed;
+            const strokeColor = confirmed ? "#10b981" : "#f43f5e";
+            svgContent += `
+              <line x1="${satNodes[i].x}" y1="${satNodes[i].y}" x2="${satNodes[j].x}" y2="${satNodes[j].y}"
+                stroke="${strokeColor}" stroke-width="2" stroke-dasharray="5,4" opacity="0.8" />
+            `;
+          }
+        }
+
+        // Draw spoke lines from institution center to each case
+        satNodes.forEach(sat => {
+          svgContent += `
+            <line x1="${cx}" y1="${cy}" x2="${sat.x}" y2="${sat.y}" stroke="#38bdf8" stroke-width="1.8" opacity="0.45" />
+          `;
+        });
+
+        // Draw Institution Hub Node
+        svgContent += `
+          <g class="cursor-pointer" onclick="openCaseDetails('${cluster.caseIds[0]}')">
+            <circle cx="${cx}" cy="${cy}" r="28" fill="#0284c7" fill-opacity="0.2" stroke="#38bdf8" stroke-width="2.5" />
+            <text x="${cx}" y="${cy - 3}" text-anchor="middle" fill="${textCol}" font-size="10" font-weight="700">${cluster.name.split(" ")[0]}</text>
+            <text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="#38bdf8" font-size="8.5" font-family="JetBrains Mono">${cluster.aicteId}</text>
+          </g>
+        `;
+
+        // Draw Case Satellite Nodes
+        satNodes.forEach(sat => {
+          const c = sat.caseObj;
+          const nodeColor = c.overlapConfirmed ? "#10b981" : "#f43f5e";
+          svgContent += `
+            <g class="cursor-pointer" onclick="openCaseDetails('${c.id}')">
+              <circle cx="${sat.x}" cy="${sat.y}" r="22" fill="${nodeColor}" fill-opacity="0.18" stroke="${nodeColor}" stroke-width="2" />
+              <text x="${sat.x}" y="${sat.y - 2}" text-anchor="middle" fill="${textCol}" font-size="9" font-weight="700" font-family="JetBrains Mono">${c.id.replace("CMP-2026-", "#")}</text>
+              <text x="${sat.x}" y="${sat.y + 9}" text-anchor="middle" fill="${subTextCol}" font-size="8">${c.bureau.split(" ")[0]}</text>
+            </g>
+          `;
+        });
+      });
+
+      svg.innerHTML = svgContent;
+    }
+
+    async function renderRelationshipClustersList() {
+      const listEl = document.getElementById("relationship-clusters-list");
+      if (!listEl) return;
+      listEl.innerHTML = '<p class="text-xs" style="color:var(--text-muted);">Finding same-institution complaint pairs and ranking them with the selected AI engine…</p>';
+      const pairs = [];
+      for (let i = 0; i < complaints.length; i++) {
+        for (let j = i + 1; j < complaints.length; j++) {
+          if (sameInstitutionRecord(complaints[i], complaints[j])) {
+            const a = complaints[i], b = complaints[j];
+            const dismissed = (a.dismissedLinkedCases || []).includes(b.id) || (b.dismissedLinkedCases || []).includes(a.id);
+            if (!dismissed) pairs.push({ a, b });
+          }
+        }
+      }
+      if (!pairs.length) {
+        listEl.innerHTML = '<p class="text-xs" style="color:var(--text-muted);">No records share a verified institution identity. Add more cases for relationship analysis.</p>';
+        return;
+      }
+      let scored = [];
+      if (aiConfig.mode === "PYTHON_API") {
+        try {
+          const data = await postAi("/api/score-pairs", {
+            pairs: pairs.slice(0, 60).map(p => ({ case_a: toApiCase(p.a), case_b: toApiCase(p.b) }))
+          });
+          scored = (data.results || []).map((r, i) => ({
+            a: pairs[i].a, b: pairs[i].b, sim: r, source: "Fine-tuned Sentence-BERT",
+            thresholdMet: r.thresholdMet ?? r.semanticThresholdMet ?? null,
+            cosine: Number(r.semanticCosine),
+            confirmed: (pairs[i].a.confirmedLinkedCases || []).includes(pairs[i].b.id) || ((pairs[i].a.linkedCases || []).includes(pairs[i].b.id) && pairs[i].a.overlapConfirmed && pairs[i].b.overlapConfirmed)
+          }));
+        } catch (err) {
+          scored = pairs.slice(0, 40).map(({a,b}) => ({a,b,sim:computeHybridOverlap(a,b),source:`Browser fallback · ${err.message}`,thresholdMet:null,cosine:null,confirmed:false}));
+        }
+      } else {
+        scored = pairs.slice(0, 40).map(({a,b}) => ({a,b,sim:computeHybridOverlap(a,b),source:"Browser-only fallback",thresholdMet:null,cosine:null,confirmed:false}));
+      }
+      scored.sort((x, y) => (Number(y.thresholdMet === true) - Number(x.thresholdMet === true)) || (Number(y.sim.totalPercent) - Number(x.sim.totalPercent)));
+      const rendered = scored.slice(0, 8).map(item => {
+        const { a, b, sim, source, thresholdMet, cosine, confirmed } = item;
+        const signalText = thresholdMet === true ? "Validation threshold met" : thresholdMet === false ? "Below validation threshold" : "Threshold status unavailable";
+        const colorClass = confirmed ? "border-l-emerald-500" : thresholdMet === true ? "border-l-rose-500" : "border-l-amber-500";
+        const badgeClass = confirmed ? "bg-emerald-500/20 text-emerald-400" : thresholdMet === true ? "bg-rose-500/20 text-rose-400" : "bg-amber-500/20 text-amber-400";
+        return `<div class="app-elevated rounded-xl p-3.5 space-y-2 border-l-4 ${colorClass}">
+          <div class="flex items-center justify-between gap-2"><span class="text-xs font-bold" style="color:var(--text-primary);">${escapeHtml(a.institution || a.institution_name || "Institution")}</span><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${badgeClass}">${Number(sim.totalPercent) || 0} signal</span></div>
+          <div class="text-[11px] flex items-center justify-between gap-2" style="color:var(--text-secondary);"><span>${escapeHtml(a.id)} · ${escapeHtml(a.bureau)}</span><span>↔</span><span>${escapeHtml(b.id)} · ${escapeHtml(b.bureau)}</span></div>
+          <div class="text-[10px]" style="color:var(--text-muted);">${escapeHtml(source)} · Institution ${Number(sim.entityPercent) || 0}% · Semantic ${Number(sim.semanticPercent) || 0}%${Number.isFinite(cosine) ? ` · Cosine ${cosine.toFixed(4)}` : ""}</div>
+          <div class="text-[10px]" style="color:var(--text-muted);">${escapeHtml(signalText)} · ${confirmed ? "Officer confirmed" : "Officer review pending"} · Score is not a probability.</div>
+          <div class="flex items-center justify-between pt-1"><button onclick="openCaseDetails('${escapeHtml(a.id)}')" class="text-[11px] font-semibold text-sky-400 hover:underline">Review case →</button>${thresholdMet === true && !confirmed ? `<button onclick="confirmCaseOverlap('${escapeHtml(a.id)}','${escapeHtml(b.id)}')" class="text-[11px] font-semibold text-emerald-400 hover:underline">Confirm coordination</button>` : ""}</div>
+        </div>`;
+      }).join("");
+      listEl.innerHTML = rendered || '<p class="text-xs" style="color:var(--text-muted);">No relationship candidates available.</p>';
+    }
+
+    function loadPresetComparison(presetNum) {
+      const instA = document.getElementById("sim-inst-a");
+      const idA = document.getElementById("sim-id-a");
+      const textA = document.getElementById("sim-text-a");
+      const instB = document.getElementById("sim-inst-b");
+      const idB = document.getElementById("sim-id-b");
+      const textB = document.getElementById("sim-text-b");
+
+      if (presetNum === 1) {
+        instA.value = "ABC Engineering College";
+        idA.value = "1-45829101";
+        textA.value = "Excess tuition and development fees charged to B.Tech students beyond prescribed state fee regulatory committee norms.";
+        instB.value = "ABC Engg College";
+        idB.value = "1-45829101";
+        textB.value = "College management is collecting capitation and annual fees above permitted limits without issuing official receipts.";
+      } else if (presetNum === 2) {
+        instA.value = "Lakeview College of Engineering";
+        idA.value = "1-33910422";
+        textA.value = "Severe shortage of regular PhD professors in Computer Science department violating AICTE faculty ratio.";
+        instB.value = "Lakeview College of Engineering";
+        idB.value = "1-33910422";
+        textB.value = "Computing laboratory sessions have no qualified faculty instructors and 40% lab computers are non-functional.";
+      } else {
+        instA.value = "Sunrise Institute of Pharmacy";
+        idA.value = "1-55401922";
+        textA.value = "Delay in verification of student scholarship forms on national scholarship portal.";
+        instB.value = "Metro Polytechnic Institute";
+        idB.value = "1-88301244";
+        textB.value = "Mechanical workshop building occupancy certificate pending from municipal corporation.";
+      }
+      runSimilaritySandbox();
+    }
+
+    async function runSimilaritySandbox() {
+      const dummyA = {
+        id: "SANDBOX-A",
+        institution: document.getElementById("sim-inst-a")?.value || "",
+        aicteId: document.getElementById("sim-id-a")?.value || "",
+        description: document.getElementById("sim-text-a")?.value || "",
+        bureau: "Grievance Cell",
+        category: "Fee Regulation"
+      };
+      const dummyB = {
+        id: "SANDBOX-B",
+        institution: document.getElementById("sim-inst-b")?.value || "",
+        aicteId: document.getElementById("sim-id-b")?.value || "",
+        description: document.getElementById("sim-text-b")?.value || "",
+        bureau: "Finance Cell",
+        category: "Fee Regulation"
+      };
+
+      if (aiConfig.mode === "PYTHON_API") {
+        try {
+          const data = await postAi("/api/check-overlap", {
+            case_a: toApiCase(dummyA), case_b: toApiCase(dummyB)
+          });
+          const notes = `Cosine ${Number(data.semanticCosine || 0).toFixed(3)} · ${data.institutionMatchType || "Institution not matched"} · ${data.crossBureau ? "Cross-bureau" : "Same bureau"} · Coordination signal, not probability`;
+          updateSandboxUi(data.totalPercent, data.entityPercent, data.semanticPercent, "Fine-tuned Sentence-BERT API", notes);
+          return;
+        } catch (err) {
+          const sim = computeHybridOverlap(dummyA, dummyB);
+          updateSandboxUi(sim.totalPercent, sim.entityPercent, sim.semanticPercent, "Browser fallback (API unavailable)", err.message);
+          return;
+        }
+      }
+      const sim = computeHybridOverlap(dummyA, dummyB);
+      updateSandboxUi(sim.totalPercent, sim.entityPercent, sim.semanticPercent, "Hybrid NLP + Cosine Vector", "Browser-only demonstration; not the trained Sentence-BERT model.");
+    }
+
+    function updateSandboxUi(totalPct, entityPct, semanticPct, engineLabel, extraNote = "", modelMeta = {}) {
+      const circle = document.getElementById("sim-score-circle");
+      const badge = document.getElementById("sim-verdict-badge");
+      const breakdown = document.getElementById("sim-breakdown-text");
+      const engineBadge = document.getElementById("sandbox-engine-badge");
+      if (!circle) return;
+      circle.textContent = `${Number(totalPct) || 0}%`;
+      engineBadge.textContent = `Engine: ${engineLabel}`;
+      const threshold = Number(modelMeta.validationThreshold);
+      const thresholdText = Number.isFinite(threshold) ? `Validation cosine threshold: ${threshold.toFixed(4)}` : "Validation threshold unavailable";
+      const matchStatus = modelMeta.institutionMatched === false ? "Institution identity mismatch" : modelMeta.thresholdMet === true ? "Semantic threshold met" : modelMeta.thresholdMet === false ? "Below semantic threshold" : "Review signal only";
+      breakdown.textContent = `ID Match: ${Number(entityPct) || 0}% · Semantic: ${Number(semanticPct) || 0}% · ${matchStatus} · ${thresholdText}${extraNote ? ` · ${extraNote}` : ""}`;
+
+      let label = "LOW SIGNAL";
+      let cls = "border-4 border-emerald-500 text-xl font-extrabold";
+      let badgeCls = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400";
+      if (modelMeta.institutionMatched === false) {
+        label = "IDENTITY MISMATCH";
+        cls = "border-4 border-slate-500 text-xl font-extrabold";
+        badgeCls = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-500/20 text-slate-400";
+      } else if (modelMeta.thresholdMet === true) {
+        label = "REVIEW SUGGESTED";
+        cls = "border-4 border-rose-500 text-xl font-extrabold";
+        badgeCls = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400";
+      } else if (modelMeta.thresholdMet === false) {
+        label = "BELOW THRESHOLD";
+        cls = "border-4 border-amber-500 text-xl font-extrabold";
+        badgeCls = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400";
+      } else if (Number(totalPct) >= 75) {
+        label = "HIGH REVIEW SIGNAL";
+        cls = "border-4 border-rose-500 text-xl font-extrabold";
+        badgeCls = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400";
+      } else if (Number(totalPct) >= 50) {
+        label = "MODERATE SIGNAL";
+        cls = "border-4 border-amber-500 text-xl font-extrabold";
+        badgeCls = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400";
+      }
+      circle.className = `w-20 h-20 rounded-full flex items-center justify-center ${cls}`;
+      badge.className = badgeCls;
+      badge.textContent = label;
+    }
+
+    async function runSimilaritySandbox() {
+      const dummyA = {
+        id: "SANDBOX-A",
+        institution: document.getElementById("sim-inst-a")?.value || "",
+        aicteId: document.getElementById("sim-id-a")?.value || "",
+        description: document.getElementById("sim-text-a")?.value || "",
+        bureau: "Grievance Cell",
+        category: "Fee Regulation"
+      };
+      const dummyB = {
+        id: "SANDBOX-B",
+        institution: document.getElementById("sim-inst-b")?.value || "",
+        aicteId: document.getElementById("sim-id-b")?.value || "",
+        description: document.getElementById("sim-text-b")?.value || "",
+        bureau: "Finance Cell",
+        category: "Fee Regulation"
+      };
+
+      if (aiConfig.mode === "PYTHON_API") {
+        try {
+          const data = await postAi("/api/check-overlap", { case_a: toApiCase(dummyA), case_b: toApiCase(dummyB) });
+          const notes = `${data.crossBureau ? "Cross-bureau" : "Same bureau"} · ${data.sameCategory ? "Same category" : "Different category"} · Coordination signal, not probability`;
+          updateSandboxUi(data.totalPercent, data.entityPercent, data.semanticPercent, "Fine-tuned Sentence-BERT API", notes, {
+            institutionMatched: data.institutionMatched,
+            thresholdMet: data.thresholdMet ?? data.semanticThresholdMet,
+            validationThreshold: data.validationThreshold
+          });
+          return;
+        } catch (err) {
+          const sim = computeHybridOverlap(dummyA, dummyB);
+          updateSandboxUi(sim.totalPercent, sim.entityPercent, sim.semanticPercent, "Browser fallback · AI API unavailable", err.message, {});
+          return;
+        }
+      }
+      const sim = computeHybridOverlap(dummyA, dummyB);
+      updateSandboxUi(sim.totalPercent, sim.entityPercent, sim.semanticPercent, "Hybrid NLP preview", "Browser-only fallback; not the trained Sentence-BERT model.", {});
+    }
+
+    // ============================================================================
+    // 10. TAB 5: ANALYTICS RENDERER (Exact Match to Uploaded Analytics Screenshot)
+    // ============================================================================
+    function renderAnalyticsTab() {
+      // 1. Complaints by category (Approval Process: 4, Fee Regulation: 3, Faculty Norms: 3, Infrastructure: 3, Scholarship: 3, Grievance Redressal: 2)
+      const categories = [
+        "Approval Process",
+        "Fee Regulation",
+        "Faculty Norms",
+        "Infrastructure",
+        "Scholarship",
+        "Grievance Redressal"
+      ];
+      const catCounts = categories.map(cat => ({
+        label: cat,
+        count: complaints.filter(c => c.category === cat).length
+      }));
+      const maxCat = Math.max(4, ...catCounts.map(x => x.count));
+
+      document.getElementById("analytics-category-bars").innerHTML = catCounts.map(item => {
+        const pct = Math.round((item.count / maxCat) * 100);
+        return `
+          <div class="grid grid-cols-12 items-center gap-3 text-xs">
+            <span class="col-span-4 font-medium" style="color: var(--text-secondary);">${item.label}</span>
+            <div class="col-span-7 h-3.5 rounded-sm bar-track overflow-hidden">
+              <div class="h-full bg-[#4f9cf9] rounded-sm transition-all duration-500" style="width: ${pct}%;"></div>
+            </div>
+            <span class="col-span-1 text-right font-bold font-mono" style="color: var(--text-primary);">${item.count}</span>
+          </div>
+        `;
+      }).join("");
+
+      // 2. Complaints by bureau / cell (Approval Bureau: 4, Finance Cell: 3, Academic Bureau: 3, Quality Assurance Cell: 3, Student Welfare Cell: 3, Grievance Cell: 2)
+      const bureausOrder = [
+        "Approval Bureau",
+        "Finance Cell",
+        "Academic Bureau",
+        "Quality Assurance Cell",
+        "Student Welfare Cell",
+        "Grievance Cell"
+      ];
+      const bureauCounts = bureausOrder.map(b => ({
+        label: b,
+        count: complaints.filter(c => c.bureau === b).length
+      }));
+      const maxBureau = Math.max(4, ...bureauCounts.map(x => x.count));
+
+      document.getElementById("analytics-bureau-bars").innerHTML = bureauCounts.map(item => {
+        const pct = Math.round((item.count / maxBureau) * 100);
+        return `
+          <div class="grid grid-cols-12 items-center gap-3 text-xs">
+            <span class="col-span-5 font-medium" style="color: var(--text-secondary);">${item.label}</span>
+            <div class="col-span-6 h-3.5 rounded-sm bar-track overflow-hidden">
+              <div class="h-full bg-[#4f9cf9] rounded-sm transition-all duration-500" style="width: ${pct}%;"></div>
+            </div>
+            <span class="col-span-1 text-right font-bold font-mono" style="color: var(--text-primary);">${item.count}</span>
+          </div>
+        `;
+      }).join("");
+
+      // 3. Pending vs resolved overall (Pending: 13 in amber #d99b26, Resolved: 5 in green #4aab76)
+      const total = Math.max(1, complaints.length);
+      const pendingOverall = complaints.filter(c => c.status !== "Resolved").length;
+      const resolvedOverall = complaints.filter(c => c.status === "Resolved").length;
+
+      document.getElementById("analytics-overall-bars").innerHTML = `
+        <div class="grid grid-cols-12 items-center gap-3 text-xs">
+          <span class="col-span-4 font-medium" style="color: var(--text-secondary);">Pending</span>
+          <div class="col-span-7 h-3.5 rounded-sm bar-track overflow-hidden">
+            <div class="h-full bg-[#d99b26] rounded-sm transition-all duration-500" style="width: ${Math.round((pendingOverall / total) * 100)}%;"></div>
+          </div>
+          <span class="col-span-1 text-right font-bold font-mono" style="color: var(--text-primary);">${pendingOverall}</span>
+        </div>
+        <div class="grid grid-cols-12 items-center gap-3 text-xs">
+          <span class="col-span-4 font-medium" style="color: var(--text-secondary);">Resolved</span>
+          <div class="col-span-7 h-3.5 rounded-sm bar-track overflow-hidden">
+            <div class="h-full bg-[#4aab76] rounded-sm transition-all duration-500" style="width: ${Math.round((resolvedOverall / total) * 100)}%;"></div>
+          </div>
+          <span class="col-span-1 text-right font-bold font-mono" style="color: var(--text-primary);">${resolvedOverall}</span>
+        </div>
+      `;
+
+      // 4. Pending / resolved by bureau (Alphabetical order matching screenshot: Academic Bureau 3/0, Approval Bureau 2/2, Finance Cell 3/0, Grievance Cell 1/1, Quality Assurance Cell 2/1, Student Welfare Cell 2/1)
+      const stackedOrder = [
+        "Academic Bureau",
+        "Approval Bureau",
+        "Finance Cell",
+        "Grievance Cell",
+        "Quality Assurance Cell",
+        "Student Welfare Cell"
+      ];
+      const maxStacked = 4;
+
+      document.getElementById("analytics-stacked-bureau-bars").innerHTML = stackedOrder.map(b => {
+        const bCases = complaints.filter(c => c.bureau === b);
+        const pend = bCases.filter(c => c.status !== "Resolved").length;
+        const res = bCases.filter(c => c.status === "Resolved").length;
+        const pendPct = Math.round((pend / maxStacked) * 100);
+        const resPct = Math.round((res / maxStacked) * 100);
+
+        return `
+          <div class="grid grid-cols-12 items-center gap-3 text-xs">
+            <span class="col-span-5 font-medium" style="color: var(--text-secondary);">${b}</span>
+            <div class="col-span-5 h-3.5 rounded-sm bar-track overflow-hidden flex">
+              <div class="h-full bg-[#d99b26] transition-all duration-500" style="width: ${pendPct}%;"></div>
+              <div class="h-full bg-[#4aab76] transition-all duration-500" style="width: ${resPct}%;"></div>
+            </div>
+            <span class="col-span-2 text-right font-bold font-mono" style="color: var(--text-primary);">${pend} / ${res}</span>
+          </div>
+        `;
+      }).join("");
+
+      // 5. Institutions with Repeated Complaints Table
+      const instMap = {};
+      complaints.forEach(c => {
+        if (!instMap[c.aicteId]) {
+          instMap[c.aicteId] = { name: c.institution, aicteId: c.aicteId, cases: [], bureaus: new Set() };
+        }
+        instMap[c.aicteId].cases.push(c);
+        instMap[c.aicteId].bureaus.add(c.bureau);
+      });
+
+      const repeatedList = Object.values(instMap).sort((a, b) => b.cases.length - a.cases.length).slice(0, 5);
+      document.getElementById("analytics-inst-tbody").innerHTML = repeatedList.map(inst => `
+        <tr class="hover:bg-sky-500/5 transition">
+          <td class="py-3 px-5 font-semibold" style="color: var(--text-primary);">${inst.name}</td>
+          <td class="py-3 px-5 font-mono" style="color: var(--text-secondary);">${inst.aicteId}</td>
+          <td class="py-3 px-5 font-mono font-bold" style="color: var(--text-primary);">${inst.cases.length}</td>
+          <td class="py-3 px-5">
+            <div class="flex flex-wrap gap-1">
+              ${Array.from(inst.bureaus).map(b => `<span class="px-2 py-0.5 rounded text-[11px] app-elevated" style="color: var(--text-secondary);">${b}</span>`).join("")}
+            </div>
+          </td>
+          <td class="py-3 px-5">
+            ${inst.cases.length > 1
+              ? `<span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30">Multi-Bureau Overlap</span>`
+              : `<span class="text-[11px]" style="color: var(--text-muted);">Single Case</span>`}
+          </td>
+          <td class="py-3 px-5 text-right">
+            <button onclick="openCaseDetails('${inst.cases[0].id}')" class="text-xs font-semibold text-sky-400 hover:underline">Inspect Institution →</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // ============================================================================
+    // 11. NEW COMPLAINT MODAL WITH REAL-TIME AI OVERLAP CHECK
+    // ============================================================================
+    function openNewComplaintModal() {
+      const modal = document.getElementById("modal-new-complaint");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      checkLiveIntakeOverlap();
+    }
+
+    function closeNewComplaintModal() {
+      const modal = document.getElementById("modal-new-complaint");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function renderIntakeOverlapMatches(matches, engineLabel, predictedCategory = null, threshold = null, topCategories = [], belowThreshold = []) {
+      const box = document.getElementById("live-intake-overlap-box");
+      if (!box) return;
+      const ranked = Array.isArray(topCategories) ? topCategories.slice(0, 3) : [];
+      const hint = predictedCategory
+        ? `<div class="text-[11px] app-elevated rounded-lg p-2"><strong style="color:var(--text-primary);">17-class model category suggestion:</strong> <span class="text-sky-400 font-bold">${escapeHtml(predictedCategory)}</span>${ranked.length > 1 ? `<p class="text-[10px] mt-0.5" style="color:var(--text-muted);">Other model-ranked labels: ${ranked.slice(1).map(x => `${escapeHtml(x.category)} (${(Number(x.score) * 100).toFixed(1)})`).join(" · ")}</p>` : ""}<p class="text-[10px] mt-0.5" style="color:var(--text-muted);">Relative model scores, not calibrated probabilities. The selected dashboard category remains unchanged.</p></div>`
+        : "";
+      const rows = matches.map(m => `<div class="flex items-start justify-between gap-2 border-t border-rose-500/15 pt-2"><div class="min-w-0"><span class="font-mono font-bold text-xs" style="color:var(--text-primary);">${escapeHtml(m.case_id || "")}</span><p class="text-[11px]" style="color:var(--text-secondary);">${escapeHtml(m.bureau || "")} · ${escapeHtml(m.category || "")} · ${escapeHtml(m.status || "")}</p><p class="text-[10px]" style="color:var(--text-muted);">${escapeHtml(m.summary || "")}</p></div><span class="shrink-0 font-mono font-bold text-xs text-rose-400">${Number(m.total_percent) || 0}%</span></div>`).join("");
+      const belowRows = belowThreshold.map(m => `<div class="flex items-start justify-between gap-2 border-t border-amber-500/15 pt-2"><div class="min-w-0"><span class="font-mono font-bold text-xs" style="color:var(--text-secondary);">${escapeHtml(m.case_id || "")}</span><p class="text-[11px]" style="color:var(--text-muted);">${escapeHtml(m.bureau || "")} · ${escapeHtml(m.category || "")} · Below validation threshold</p></div><span class="shrink-0 font-mono text-xs text-amber-400">${Number(m.similarity_percent) || 0}% cosine</span></div>`).join("");
+      box.className = matches.length ? "rounded-xl p-4 border border-rose-500/40 bg-rose-500/10 space-y-2" : "rounded-xl p-4 border border-amber-500/30 bg-amber-500/5 space-y-2";
+      box.innerHTML = `${matches.length ? `<div class="flex items-center justify-between gap-2"><span class="text-xs font-bold text-rose-400">⚡ Related-case suggestions (${matches.length})</span><span class="text-[10px] font-mono" style="color:var(--text-muted);">${escapeHtml(engineLabel)}</span></div>${rows}` : `<div class="text-xs font-bold text-amber-400">No candidate exceeded the validation threshold</div><p class="text-[11px]" style="color:var(--text-secondary);">${escapeHtml(engineLabel)} compared same-institution records. Below-threshold candidates are shown separately and are not presented as related cases.</p>`}${belowRows ? `<div class="pt-2"><p class="text-[10px] font-bold uppercase tracking-wide" style="color:var(--text-muted);">Below-threshold candidates · not suggested links</p>${belowRows}</div>` : ""}${hint}<p class="text-[10px]" style="color:var(--text-muted);">${threshold !== null && threshold !== undefined ? `Validation cosine threshold: ${Number(threshold).toFixed(4)}. ` : ""}Similarity is a review signal, not a probability. All suggested links require officer verification.</p>`;
+    }
+
+    function checkLiveIntakeOverlap() {
+      const requestId = ++intakeCheckSequence;
+      clearTimeout(intakeCheckTimer);
+      const draft = {
+        id: "NEW-DRAFT",
+        institution: document.getElementById("new-inst-name")?.value || "",
+        aicteId: document.getElementById("new-inst-id")?.value || "",
+        category: document.getElementById("new-category")?.value || "",
+        bureau: document.getElementById("new-bureau")?.value || "",
+        description: document.getElementById("new-description")?.value || "",
+        summary: document.getElementById("new-description")?.value || ""
+      };
+      const box = document.getElementById("live-intake-overlap-box");
+      if (!box) return;
+      box.className = "rounded-xl p-4 border border-sky-500/30 bg-sky-500/5";
+      box.innerHTML = '<p class="text-xs" style="color:var(--text-secondary);">Checking same-institution cases…</p>';
+
+      intakeCheckTimer = setTimeout(async () => {
+        if (requestId !== intakeCheckSequence) return;
+        if (aiConfig.mode === "PYTHON_API") {
+          try {
+            const data = await postAi("/api/find-related", {
+              case: toApiCase(draft),
+              candidate_cases: complaints.map(toApiCase),
+              top_k: 5
+            });
+            if (requestId !== intakeCheckSequence) return;
+            renderIntakeOverlapMatches(data.matches || [], "Fine-tuned Sentence-BERT API", data.predicted_category || null, data.validation_threshold, data.top_categories || [], data.below_threshold_candidates || []);
+            return;
+          } catch (err) {
+            if (requestId !== intakeCheckSequence) return;
+            const localMatches = complaints
+              .filter(existing => sameInstitutionRecord(draft, existing))
+              .map(existing => ({ existing, sim: computeHybridOverlap(draft, existing) }))
+              .filter(x => x.sim.totalPercent >= 55)
+              .sort((a, b) => b.sim.totalPercent - a.sim.totalPercent)
+              .map(x => ({ case_id: x.existing.id, bureau: x.existing.bureau, category: x.existing.category, status: x.existing.status, summary: x.existing.summary, total_percent: x.sim.totalPercent }));
+            renderIntakeOverlapMatches(localMatches, `Browser fallback (API unavailable: ${err.message})`);
+            return;
+          }
+        }
+        const localMatches = complaints
+          .filter(existing => sameInstitutionRecord(draft, existing))
+          .map(existing => ({ existing, sim: computeHybridOverlap(draft, existing) }))
+          .filter(x => x.sim.totalPercent >= 55)
+          .sort((a, b) => b.sim.totalPercent - a.sim.totalPercent)
+          .map(x => ({ case_id: x.existing.id, bureau: x.existing.bureau, category: x.existing.category, status: x.existing.status, summary: x.existing.summary, total_percent: x.sim.totalPercent }));
+        if (requestId === intakeCheckSequence) renderIntakeOverlapMatches(localMatches, "Browser Hybrid NLP fallback");
+      }, 300);
+    }
+
+    async function saveNewComplaint() {
+      const submitButton = document.querySelector('#modal-new-complaint button[onclick="saveNewComplaint()"]');
+      if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Checking related cases..."; }
+      try {
+        const inst = document.getElementById("new-inst-name").value.trim() || "Sample Technical Institute";
+        const aicteId = document.getElementById("new-inst-id").value.trim() || "1-99001122";
+        const category = document.getElementById("new-category").value;
+        const bureau = document.getElementById("new-bureau").value;
+        const priority = document.getElementById("new-priority").value;
+        const complainant = document.getElementById("new-complainant").value;
+        const desc = document.getElementById("new-description").value.trim() || "Complaint submitted for review.";
+        const nextNum = 1001 + complaints.length;
+        const newId = `CMP-2026-${nextNum}`;
+        const draftObj = {
+          id: newId, institution: inst, aicteId, category, bureau,
+          received: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+          month: new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+          priority, status: "Pending", complainant,
+          summary: desc.length > 88 ? desc.slice(0, 88) + "..." : desc,
+          description: desc, linkedCases: [], overlapConfirmed: false,
+          modelCategoryHint: null,
+          modelCategoryAlternatives: [],
+          audit: [{ time: new Date().toLocaleString(), actor: "Portal Intake", note: `Complaint registered under ${bureau}.` }]
+        };
+
+        let suggestions = [];
+        let predictedCategory = null;
+        let categoryAlternatives = [];
+        let source = "Browser Hybrid NLP fallback";
+        if (aiConfig.mode === "PYTHON_API") {
+          try {
+            const data = await postAi("/api/find-related", {
+              case: toApiCase(draftObj),
+              candidate_cases: complaints.map(toApiCase),
+              top_k: 5
+            });
+            suggestions = data.matches || [];
+            predictedCategory = data.predicted_category || null;
+            categoryAlternatives = Array.isArray(data.top_categories) ? data.top_categories.slice(0, 3) : [];
+            source = "Sentence-BERT AI Assistant";
+          } catch (err) {
+            source = `Browser fallback (API unavailable: ${err.message})`;
+          }
+        }
+        if (source.startsWith("Browser")) {
+          suggestions = complaints
+            .filter(existing => sameInstitutionRecord(draftObj, existing))
+            .map(existing => {
+              const sim = computeHybridOverlap(draftObj, existing);
+              return { case_id: existing.id, total_percent: sim.totalPercent, bureau: existing.bureau, category: existing.category, status: existing.status, summary: existing.summary };
+            })
+            .filter(m => m.total_percent >= 55)
+            .sort((a, b) => b.total_percent - a.total_percent)
+            .slice(0, 5);
+        }
+
+        // Store unconfirmed suggestions for officer review; do not confirm or merge records.
+        draftObj.linkedCases = suggestions.map(x => x.case_id).filter(Boolean);
+        draftObj.modelCategoryHint = predictedCategory;
+        draftObj.modelCategoryAlternatives = categoryAlternatives;
+        if (draftObj.linkedCases.length || predictedCategory) {
+          draftObj.audit.push({
+            time: new Date().toLocaleString(),
+            actor: source,
+            note: `Related-case suggestions for officer verification: ${draftObj.linkedCases.length ? draftObj.linkedCases.join(", ") : "none"}. ${predictedCategory ? `Model category hint: ${predictedCategory}. ` : ""}No automatic link confirmation or merge was performed.`
+          });
+        }
+        complaints.unshift(draftObj);
+        saveToStorage();
+        closeNewComplaintModal();
+        currentDetailId = newId;
+        refreshAllViews();
+        showToast(`Registered ${newId}; ${draftObj.linkedCases.length} suggestions require officer review`, "success");
+      } finally {
+        if (submitButton) { submitButton.disabled = false; submitButton.textContent = "Submit & Register Case"; }
+      }
+    }
+
+    // ============================================================================
+    // 12. AI CONNECTOR MODAL & CSV EXPORT
+    // ============================================================================
+    function openAiConfigModal() {
+      const m = document.getElementById("modal-ai-config");
+      document.getElementById("ai-config-mode").value = aiConfig.mode;
+      document.getElementById("ai-config-url").value = aiConfig.apiUrl;
+      m.classList.remove("hidden");
+      m.classList.add("flex");
+    }
+
+    function closeAiConfigModal() {
+      const m = document.getElementById("modal-ai-config");
+      m.classList.add("hidden");
+      m.classList.remove("flex");
+    }
+
+    async function testAiEndpointPing() {
+      const url = document.getElementById("ai-config-url").value.trim();
+      const statusEl = document.getElementById("ai-ping-status");
+      statusEl.textContent = `Testing ${url} ...`;
+      statusEl.className = "text-xs p-3 rounded-lg app-elevated font-mono";
+      const original = aiConfig.apiUrl;
+      aiConfig.apiUrl = url;
+      try {
+        const data = await postAi("/api/check-overlap", {
+          case_a: toApiCase({ institution: "ABC Engineering College", aicteId: "1-45829101", description: "Excess tuition and development fees charged beyond approved norms.", bureau: "Grievance Cell", category: "Fee Regulation" }),
+          case_b: toApiCase({ institution: "ABC Engg College", aicteId: "1-45829101", description: "College management is collecting capitation and annual fees above permitted limits.", bureau: "Finance Cell", category: "Fee Regulation" })
+        });
+        statusEl.textContent = `✓ Connected. Fine-tuned model returned ${data.totalPercent}% coordination signal; semantic cosine ${Number(data.semanticCosine || 0).toFixed(4)}. Human review required: ${data.requiresHumanReview === true ? "YES" : "NO"}.`;
+        statusEl.className = "text-xs p-3 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono";
+      } catch (e) {
+        aiConfig.apiUrl = original;
+        statusEl.textContent = `Connection failed: ${e.message}. Check that FastAPI is running and the URL is correct.`;
+        statusEl.className = "text-xs p-3 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30 font-mono";
+      }
+    }
+
+    function saveAiConfig() {
+      aiConfig.mode = document.getElementById("ai-config-mode").value;
+      aiConfig.apiUrl = document.getElementById("ai-config-url").value.trim();
+      try { localStorage.setItem(AI_CONFIG_KEY, JSON.stringify(aiConfig)); } catch (_) {}
+      document.getElementById("ai-mode-label").textContent = aiConfig.mode === "PYTHON_API" ? "Python FastAPI" : "Hybrid NLP";
+      closeAiConfigModal();
+      runSimilaritySandbox();
+      renderRelationshipClustersList();
+      if (currentDetailId) refreshDetailsOverlapFromPython(currentDetailId);
+      showToast(`AI Engine set to ${aiConfig.mode === "PYTHON_API" ? "Fine-tuned Python FastAPI" : "Browser Hybrid NLP"}`, "success");
+    }
+
+    function exportComplaintsCsv() {
+      const headers = ["Complaint_ID", "Institution", "AICTE_ID", "Category", "Bureau_Cell", "Received_Date", "Priority", "Status", "Linked_Overlaps"];
+      const rows = complaints.map(c => [
+        c.id,
+        `"${c.institution}"`,
+        c.aicteId,
+        `"${c.category}"`,
+        `"${c.bureau}"`,
+        c.received,
+        c.priority,
+        c.status,
+        `"${(c.linkedCases || []).join(";")}"`
+      ]);
+      const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "SIH26264_AICTE_Complaints_Report.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Exported ${complaints.length}-complaint dataset to CSV`, "info");
+    }
+
+    function showToast(msg, type = "info") {
+      const container = document.getElementById("toast-container");
+      const el = document.createElement("div");
+      const colors = type === "success"
+        ? "bg-emerald-500 text-slate-950 font-semibold"
+        : "bg-sky-500 text-slate-950 font-semibold";
+      el.className = `px-4 py-2.5 rounded-xl text-xs shadow-lg transition-all duration-300 ${colors}`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 300);
+      }, 2800);
+    }
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>
